@@ -121,7 +121,17 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
                   }`}
                 >
-                  🎨 Imágenes (Prompts por Línea)
+                  🎨 Imágenes (Prompts)
+                </button>
+                <button
+                  onClick={() => setActiveTab('estilo')}
+                  className={`px-6 py-3 rounded-2xl font-black text-lg transition-all flex items-center gap-2 ${
+                    activeTab === 'estilo'
+                      ? 'bg-kids-purple text-white shadow-md'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                  }`}
+                >
+                  🎧 Estilo Musical
                 </button>
               </div>
 
@@ -145,6 +155,39 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                       </div>
                     );
                   })}
+                </div>
+              ) : activeTab === 'estilo' ? (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="bg-kids-purple/10 border-4 border-kids-purple/30 p-6 rounded-3xl flex flex-col items-start gap-4 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <span className="text-4xl">🎧</span>
+                      <div>
+                        <h4 className="text-xl font-black text-slate-800 dark:text-white">Instrucciones de Estilo (Inglés)</h4>
+                        <p className="text-slate-600 dark:text-slate-300 font-bold text-sm">
+                          Copia y pega este texto en herramientas como Suno AI o Udio (en el campo "Style of Music") para generar la canción perfecta.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="w-full bg-white dark:bg-slate-800 p-6 rounded-2xl border-2 border-slate-200 dark:border-slate-700 mt-2">
+                      <p className="text-kids-purple font-mono font-bold text-lg select-all leading-relaxed break-words">
+                        {script[0]?.musicPrompt || "upbeat children's music, happy pop, catchy melody, acoustic guitar, bouncy rhythm"}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        const textToCopy = script[0]?.musicPrompt || "upbeat children's music, happy pop, catchy melody, acoustic guitar, bouncy rhythm";
+                        navigator.clipboard.writeText(textToCopy);
+                        setPromptCopiedIndex('music');
+                        setTimeout(() => setPromptCopiedIndex(null), 2000);
+                      }}
+                      className="btn-kids w-full bg-kids-purple hover:bg-purple-600 text-white flex items-center justify-center gap-2"
+                    >
+                      {promptCopiedIndex === 'music' ? <Check size={20} /> : <Copy size={20} />}
+                      {promptCopiedIndex === 'music' ? '¡Estilo Copiado!' : 'Copiar Estilo Musical'}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-6 animate-fade-in">

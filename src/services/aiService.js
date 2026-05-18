@@ -25,6 +25,7 @@ const getFallbackScript = (topic, duration, videoType) => {
           `[Verso 4]\nSube ya las manos, aplaude con fe,\ngira a la derecha, uno, dos y tres.\nGuarda este recuerdo mágico otra vez,\njunto con ${cleanTopic} todo sale bien.`
         ],
         chorus: `[Coro]\n¡Baila, canta, ríe sin parar!\nCon ${cleanTopic} vamos a soñar.\n¡Da una vuelta entera y vuelve a saltar,\nque esta fiesta nunca va a terminar!`,
+        musicPrompt: "energetic children's pop, happy upbeat rhythm, fun synthesizer, catchy male vocal",
         versePrompts: [
           [
             { line: "Con gran alegría vamos a empezar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje mascota sonriendo emocionado al comenzar un juego sobre ${cleanTopic}.` },
@@ -67,6 +68,7 @@ const getFallbackScript = (topic, duration, videoType) => {
           `[Verso 4]\nGuarda el secreto en tu corazón,\ncanta muy bajito esta bella canción.\nDuerme muy tranquilo en tu habitación,\njunto con ${cleanTopic} y con emoción.`
         ],
         chorus: `[Coro]\n¡Vuela, sueña, flota sin temor!\nCon ${cleanTopic} siente el amor.\n¡Deja que las estrellas te den su resplandor,\nque esta noche mágica tiene un gran color!`,
+        musicPrompt: "soft magical lullaby, sweet acoustic guitar, gentle chimes, calming female vocal, dreamy atmosphere",
         versePrompts: [
           [
             { line: "Una luz destella en el cielo azul,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje mirando una estrella fugaz brillante en un cielo nocturno azul profundo.` },
@@ -109,6 +111,7 @@ const getFallbackScript = (topic, duration, videoType) => {
           `[Verso 4]\nCorre muy deprisa, llega hasta el final,\nesta competencia ha sido genial.\nAlza la bandera de modo triunfal,\njunto con ${cleanTopic} fiesta sin igual.`
         ],
         chorus: `[Coro]\n¡Salta, brinca, corre sin parar!\nCon ${cleanTopic} vamos a jugar.\n¡Siente la energía que te va a llenar,\nque este juego loco nunca va a acabar!`,
+        musicPrompt: "fast bouncy electro pop, playful rhythm, energetic beats, joyful kid chorus",
         versePrompts: [
           [
             { line: "Salta que salta sin mirar atrás,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje saltando con zapatos de resortes en un parque futurista.` },
@@ -151,6 +154,7 @@ const getFallbackScript = (topic, duration, videoType) => {
           `[Verso 4]\nYa descubrimos la gran verdad,\ncon mucha astucia y curiosidad.\nCelebraremos con felicidad,\njunto con ${cleanTopic} y en amistad.`
         ],
         chorus: `[Coro]\n¡Busca, explora, mira con atención!\nCon ${cleanTopic} en cada rincón.\n¡Descubre el secreto de esta gran misión,\nque aprender es una hermosa pasión!`,
+        musicPrompt: "curious acoustic pop, light percussion, marimba, inquisitive upbeat melody, cheerful vocals",
         versePrompts: [
           [
             { line: "Toma tu lupa, vamos a buscar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje con sombrero de explorador mirando a través de una lupa gigante brillante.` },
@@ -193,6 +197,7 @@ const getFallbackScript = (topic, duration, videoType) => {
           `[Verso 4]\nCae confeti de cinta y papel,\neste momento es dulce como miel.\nGuarda el recuerdo en un gran carrusel,\njunto con ${cleanTopic} pintando el pincel.`
         ],
         chorus: `[Coro]\n¡Canta, desfila, ríe con pasión!\nCon ${cleanTopic} en esta celebración.\n¡Siente la música y el acordeón,\nque este carnaval es pura emoción!`,
+        musicPrompt: "festive latin pop, carnival rhythm, accordion, brass section, very happy upbeat dance",
         versePrompts: [
           [
             { line: "Suenan tambores, empieza el compás,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje tocando un tambor brillante con baquetas que desprenden chispas.` },
@@ -245,7 +250,11 @@ const getFallbackScript = (topic, duration, videoType) => {
       const item = order[i];
       const audio = item.isChorus ? currentSong.chorus : currentSong.verses[item.verseIndex];
       const imagePrompts = item.isChorus ? (i === 1 ? currentSong.chorusPrompts : []) : currentSong.versePrompts[item.verseIndex];
-      script.push({ audio, imagePrompts });
+      const scriptItem = { audio, imagePrompts };
+      if (i === 0) {
+        scriptItem.musicPrompt = currentSong.musicPrompt;
+      }
+      script.push(scriptItem);
     }
     return script;
   }
@@ -398,6 +407,12 @@ rasca la alfombra con patas otra vez.
 Trae sus juguetes, los pone a mis pies,
 ¡me entiende muy rápido, en un, dos y tres!
 
+REGLAS PARA EL PROMPT MUSICAL ("musicPrompt"):
+- En el PRIMER objeto del array (el del Verso 1), DEBES incluir una propiedad "musicPrompt".
+- Debe contener un prompt de estilo musical en INGLÉS (ej. "upbeat pop, children's music, happy acoustic guitar, catchy melody").
+- Debe ser ideal para herramientas como Suno AI o Udio, describiendo el género, ritmo e instrumentos que encajen con la letra generada.
+- OBLIGATORIO: DEBE ESTAR EN INGLÉS. Los demás objetos no necesitan esta propiedad.
+
 REGLAS PARA LOS PROMPTS DE IMÁGENES ("imagePrompts"):
 - Para cada sección, debes proporcionar un array "imagePrompts".
 - Por cada una de las líneas de la letra en esa sección, genera un objeto con la línea exacta ("line") y un prompt de imagen por IA ("prompt") que represente lo que dice esa línea.
@@ -410,6 +425,7 @@ Devuelve estrictamente un array JSON de objetos con el formato:
 [
   { 
     "audio": "[Verso 1]\nSi escondo su hueso, lo encuentra al revés,\nrasca la alfombra con patas otra vez.\nTrae sus juguetes, los pone a mis pies,\n¡me entiende muy rápido, en un, dos y tres!",
+    "musicPrompt": "upbeat children's pop, happy acoustic guitar, bouncy rhythm, catchy melody, cheerful male vocal",
     "imagePrompts": [
       { "line": "Si escondo su hueso, lo encuentra al revés,", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un perrito travieso buscando su hueso debajo de un sofá amarillo en una sala acogedora." },
       { "line": "rasca la alfombra con patas otra vez.", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El perrito travieso rascando una alfombra azul con texturas suaves y detalladas." },
