@@ -6,6 +6,8 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
   const [isLocalLoading, setIsLocalLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [activeTab, setActiveTab] = useState('letra');
+  const [promptCopiedIndex, setPromptCopiedIndex] = useState(null);
 
   const isLoading = isParentLoading || isLocalLoading;
 
@@ -99,25 +101,112 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
           </div>
 
           {videoType === 'musical' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {displayedScript.map((row, idx) => {
-                const isChorus = row.audio?.includes('[Coro]') || row.audio?.includes('Coro');
-                const cleanAudio = row.audio?.replace(/\[.*?\]\n?/, '').trim();
-                const sectionTag = row.audio?.match(/\[(.*?)\]/)?.[1] || (isChorus ? 'Coro' : `Verso ${idx + 1}`);
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex flex-wrap gap-4 border-b-4 border-slate-100 dark:border-slate-700 pb-4">
+                <button
+                  onClick={() => setActiveTab('letra')}
+                  className={`px-6 py-3 rounded-2xl font-black text-lg transition-all flex items-center gap-2 ${
+                    activeTab === 'letra'
+                      ? 'bg-kids-secondary text-white shadow-md'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                  }`}
+                >
+                  🎶 Letra de la Canción
+                </button>
+                <button
+                  onClick={() => setActiveTab('imagenes')}
+                  className={`px-6 py-3 rounded-2xl font-black text-lg transition-all flex items-center gap-2 ${
+                    activeTab === 'imagenes'
+                      ? 'bg-kids-primary text-white shadow-md'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                  }`}
+                >
+                  🎨 Imágenes (Prompts por Línea)
+                </button>
+              </div>
 
-                return (
-                  <div key={idx} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-secondary/30 rounded-3xl p-6 shadow-md hover:border-kids-secondary transition-all flex flex-col justify-between relative overflow-hidden group">
-                    <div className={`absolute top-0 right-0 ${isChorus ? 'bg-kids-secondary' : 'bg-kids-primary'} text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm`}>
-                      {isChorus ? '🌟 ' : '🎵 '}{sectionTag}
-                    </div>
-                    <div className="pt-6">
-                      <p className="text-slate-800 dark:text-slate-100 font-black text-lg leading-relaxed whitespace-pre-line font-mono tracking-wide">
-                        {cleanAudio}
-                      </p>
-                    </div>
+              {activeTab === 'letra' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+                  {displayedScript.map((row, idx) => {
+                    const isChorus = row.audio?.includes('[Coro]') || row.audio?.includes('Coro');
+                    const cleanAudio = row.audio?.replace(/\[.*?\]\n?/, '').trim();
+                    const sectionTag = row.audio?.match(/\[(.*?)\]/)?.[1] || (isChorus ? 'Coro' : `Verso ${idx + 1}`);
+
+                    return (
+                      <div key={idx} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-secondary/30 rounded-3xl p-6 shadow-md hover:border-kids-secondary transition-all flex flex-col justify-between relative overflow-hidden group">
+                        <div className={`absolute top-0 right-0 ${isChorus ? 'bg-kids-secondary' : 'bg-kids-primary'} text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm`}>
+                          {isChorus ? '🌟 ' : '🎵 '}{sectionTag}
+                        </div>
+                        <div className="pt-6">
+                          <p className="text-slate-800 dark:text-slate-100 font-black text-lg leading-relaxed whitespace-pre-line font-mono tracking-wide">
+                            {cleanAudio}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="bg-kids-primary/10 border-4 border-kids-primary/30 p-4 rounded-2xl flex items-center gap-3">
+                    <span className="text-3xl">💡</span>
+                    <p className="text-slate-700 dark:text-slate-300 font-bold text-sm leading-relaxed">
+                      Copia estos prompts en herramientas como Midjourney, DALL-E 3, Bing Image Creator o Ideogram. Todos siguen el mismo estilo maestro de Pixar/Disney para garantizar que las imágenes de tu video tengan coherencia absoluta.
+                    </p>
                   </div>
-                );
-              })}
+
+                  <div className="space-y-6">
+                    {(() => {
+                      let chorusSeen = false;
+                      const allImagePrompts = [];
+
+                      displayedScript.forEach((row, sIdx) => {
+                        const isChorus = row.audio?.includes('[Coro]') || row.audio?.includes('Coro');
+                        if (isChorus) {
+                          if (!chorusSeen) {
+                            if (row.imagePrompts) {
+                              allImagePrompts.push(...row.imagePrompts.map(p => ({ ...p, sectionTag: 'Coro' })));
+                            }
+                            chorusSeen = true;
+                          }
+                        } else {
+                          const sTag = row.audio?.match(/\[(.*?)\]/)?.[1] || `Verso ${sIdx + 1}`;
+                          if (row.imagePrompts) {
+                            allImagePrompts.push(...row.imagePrompts.map(p => ({ ...p, sectionTag: sTag })));
+                          }
+                        }
+                      });
+
+                      return allImagePrompts.map((item, idx) => (
+                        <div key={idx} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-primary/30 rounded-3xl p-6 shadow-sm hover:border-kids-primary transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
+                          <div className="absolute top-0 right-0 bg-kids-primary text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
+                            {item.sectionTag} • Línea {idx + 1}
+                          </div>
+                          <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
+                            <p className="text-kids-secondary font-black text-xl mb-3 flex items-center gap-2">
+                              <span>🎵</span> "{item.line}"
+                            </p>
+                            <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words">
+                              {item.prompt}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(item.prompt);
+                              setPromptCopiedIndex(idx);
+                              setTimeout(() => setPromptCopiedIndex(null), 2000);
+                            }}
+                            className="btn-kids btn-primary whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
+                          >
+                            {promptCopiedIndex === idx ? <Check size={20} /> : <Copy size={20} />}
+                            {promptCopiedIndex === idx ? '¡Copiado!' : 'Copiar Prompt'}
+                          </button>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border-4 border-slate-100 dark:border-slate-700">
