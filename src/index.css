@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-kids {
+    @apply font-bold rounded-2xl px-6 py-3 transition-all transform active:scale-95 text-white shadow-kids-button active:shadow-none active:translate-y-1 text-lg flex items-center justify-center gap-2;
+  }
+
+  .btn-primary {
+    @apply bg-kids-primary hover:bg-red-400;
+  }
+
+  .btn-secondary {
+    @apply bg-kids-secondary hover:bg-blue-400;
+  }
+
+  .btn-accent {
+    @apply bg-kids-accent hover:bg-yellow-300 text-slate-800;
+  }
+
+  .btn-green {
+    @apply bg-kids-green hover:bg-green-400;
+  }
+
+  .btn-purple {
+    @apply bg-kids-purple hover:bg-purple-400;
+  }
+
+  .card-kids {
+    @apply bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-kids border-4 border-slate-100 dark:border-slate-700 transition-colors;
+  }
+
+  .input-kids {
+    @apply w-full rounded-2xl border-4 border-slate-200 dark:border-slate-600 p-4 text-lg font-bold text-slate-700 dark:text-slate-200 bg-transparent outline-none focus:border-kids-secondary transition-colors;
+  }
+}
+
+@keyframes bounce-slow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s ease-in-out infinite;
+}
