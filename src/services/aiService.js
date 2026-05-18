@@ -414,12 +414,14 @@ REGLAS PARA EL PROMPT MUSICAL ("musicPrompt"):
 - Debe ser ideal para herramientas como Suno AI o Udio.
 - OBLIGATORIO: DEBE ESTAR EN INGLÉS. Los demás objetos no necesitan esta propiedad.
 
-REGLAS PARA LOS PROMPTS DE IMÁGENES ("imagePrompts"):
+REGLAS PARA LOS PROMPTS DE IMÁGENES ("imagePrompts") Y COHERENCIA DE PERSONAJES:
 - Para cada sección, debes proporcionar un array "imagePrompts".
 - Por cada una de las líneas de la letra en esa sección, genera un objeto con la línea exacta ("line") y un prompt de imagen por IA ("prompt") que represente lo que dice esa línea.
-- REGLA ESTRICTA DE COHERENCIA DE ESTILO: Todos y cada uno de los prompts generados DEBEN comenzar exactamente con la misma instrucción de estilo maestro para garantizar una coherencia visual absoluta en todo el video musical y que no salgan estilos diferentes.
-- Usa obligatoriamente este estilo maestro al inicio de cada prompt: "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. [Descripción de la escena y el personaje principal realizando la acción de la línea]".
-- Mantén al mismo personaje o personajes principales a lo largo de todos los prompts para que tenga coherencia narrativa.
+- REGLA ESTRICTA DE COHERENCIA DE ESTILO: Todos y cada uno de los prompts generados DEBEN comenzar exactamente con la misma instrucción de estilo maestro: "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio."
+- REGLA MAESTRA DE COHERENCIA DE PERSONAJES (¡CRÍTICO PARA LA ARMONÍA DEL VIDEO!): Para que las IAs generadoras de imágenes (DALL-E 3, Midjourney, Ideogram, etc.) mantengan al mismo personaje a lo largo de todo el video y no cambien su apariencia en cada foto, DEBES INVENTAR UNA DESCRIPCIÓN VISUAL FIJA Y EXTREMADAMENTE DETALLADA del personaje o personajes principales (sean niños, animales o ambos) al inicio del proceso y REPETIR ESA EXACTA DESCRIPCIÓN VISUAL VERBATIM en todos y cada uno de los prompts de la canción.
+- Por ejemplo, si el protagonista es un perrito, NO escribas solo "un perrito travieso". Debes inventar y usar en todos los prompts una descripción fija como: "El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante". Si es un oso: "El mismo oso pardo bebé gordito, con pelaje suave color canela, grandes ojos negros expresivos y un moño rojo en el cuello". Si es un niño: "El mismo niño de 5 años con cabello castaño rizado, pecas en las mejillas, usando una camiseta amarilla y overoles de mezclilla".
+- Estructura obligatoria de cada prompt: "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. [DESCRIPCIÓN VISUAL FIJA DEL PERSONAJE PRINCIPAL], [Acción y entorno específico de la línea actual]."
+- Mantén esta coherencia escrupulosamente en todos los versos y coros.
 - Para las repeticiones del Coro (después del Verso 2, Verso 3, Verso 4), puedes dejar el array "imagePrompts" vacío o repetir el mismo del primer coro, ya que en la interfaz mostraremos los prompts del coro una única vez.
 
 Devuelve estrictamente un array JSON de objetos con el formato:
@@ -428,16 +430,16 @@ Devuelve estrictamente un array JSON de objetos con el formato:
     "audio": "[Verso 1]\nSi escondo su hueso, lo encuentra al revés,\nrasca la alfombra con patas otra vez.\nTrae sus juguetes, los pone a mis pies,\n¡me entiende muy rápido, en un, dos y tres!",
     "musicPrompt": "upbeat children's pop, happy acoustic guitar, bouncy rhythm, catchy melody, cheerful male vocal",
     "imagePrompts": [
-      { "line": "Si escondo su hueso, lo encuentra al revés,", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un perrito travieso buscando su hueso debajo de un sofá amarillo en una sala acogedora." },
-      { "line": "rasca la alfombra con patas otra vez.", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El perrito travieso rascando una alfombra azul con texturas suaves y detalladas." },
-      { "line": "Trae sus juguetes, los pone a mis pies,", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El perrito travieso con una pelota roja en la boca frente a los zapatos de un niño." },
-      { "line": "¡me entiende muy rápido, en un, dos y tres!", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El perrito travieso chocando los cinco con un niño alegre entre destellos mágicos." }
+      { "line": "Si escondo su hueso, lo encuentra al revés,", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, buscando su hueso debajo de un sofá amarillo en una sala acogedora." },
+      { "line": "rasca la alfombra con patas otra vez.", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, rascando una alfombra azul con texturas suaves y detalladas." },
+      { "line": "Trae sus juguetes, los pone a mis pies,", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, con una pelota roja en la boca frente a los zapatos de un niño." },
+      { "line": "¡me entiende muy rápido, en un, dos y tres!", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, chocando los cinco con un niño alegre entre destellos mágicos." }
     ]
   },
   { 
     "audio": "[Coro]\n¡Baila, canta, ríe sin parar!\nCon el osito vamos a soñar.\n¡Da una vuelta entera y vuelve a saltar,\nque esta fiesta nunca va a terminar!",
     "imagePrompts": [
-      { "line": "¡Baila, canta, ríe sin parar!", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El perrito y un osito bailando alegremente bajo luces de colores." }
+      { "line": "¡Baila, canta, ríe sin parar!", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, bailando alegremente junto a un osito de peluche bajo luces de colores." }
     ]
   }
 ]`;
