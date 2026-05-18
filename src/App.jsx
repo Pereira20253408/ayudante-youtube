@@ -54,7 +54,7 @@ function App() {
       {/* Sidebar */}
       <aside className="w-full md:w-72 bg-white dark:bg-slate-900 shadow-kids p-6 flex flex-col z-10 border-r-4 border-slate-100 dark:border-slate-800 transition-colors">
         <div className="flex flex-col items-center gap-3 mb-10 mt-4 text-center">
-          <img src="/mascot.png" alt="Mascota Magia Infantil" className="w-32 h-32 object-contain drop-shadow-xl animate-bounce-slow" />
+          <img src={`${import.meta.env.BASE_URL}mascot.png`} alt="Mascota Magia Infantil" className="w-32 h-32 object-contain drop-shadow-xl animate-bounce-slow" />
           <h1 className="text-2xl font-black text-slate-800 dark:text-white leading-tight">
             CKC
           </h1>
