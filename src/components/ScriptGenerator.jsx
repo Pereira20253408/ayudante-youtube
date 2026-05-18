@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Sparkles, Copy, Check, Loader2 } from 'lucide-react';
 import { generateScript } from '../services/aiService';
 
-export default function ScriptGenerator({ topic, duration, script, setScript, isLoading: isParentLoading }) {
+export default function ScriptGenerator({ topic, duration, videoType, script, setScript, isLoading: isParentLoading }) {
   const [isLocalLoading, setIsLocalLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -15,7 +15,7 @@ export default function ScriptGenerator({ topic, duration, script, setScript, is
     setIsLocalLoading(true);
     setShowAll(false);
     try {
-      const result = await generateScript(topic, duration);
+      const result = await generateScript(topic, duration, videoType);
       setScript(result);
     } catch (error) {
       console.error(error);

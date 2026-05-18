@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Image as ImageIcon, Loader2, Lightbulb, Type, Copy, Check } from 'lucide-react';
 import { generateThumbnailIdeas } from '../services/aiService';
 
-export default function ThumbnailIdeas({ topic, idea, setIdea, isLoading: isParentLoading }) {
+export default function ThumbnailIdeas({ topic, videoType, idea, setIdea, isLoading: isParentLoading }) {
   const [isLocalLoading, setIsLocalLoading] = useState(false);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
 
@@ -14,7 +14,7 @@ export default function ThumbnailIdeas({ topic, idea, setIdea, isLoading: isPare
     
     setIsLocalLoading(true);
     try {
-      const result = await generateThumbnailIdeas(topic);
+      const result = await generateThumbnailIdeas(topic, videoType);
       setIdea(result);
     } catch (error) {
       console.error(error);

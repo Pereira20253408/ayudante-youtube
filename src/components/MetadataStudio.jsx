@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Tags, Copy, Check, Loader2 } from 'lucide-react';
 import { generateMetadata } from '../services/aiService';
 
-export default function MetadataStudio({ topic, metadata, setMetadata, isLoading: isParentLoading }) {
+export default function MetadataStudio({ topic, videoType, metadata, setMetadata, isLoading: isParentLoading }) {
   const [isLocalLoading, setIsLocalLoading] = useState(false);
   const [copiedTitle, setCopiedTitle] = useState(null);
 
@@ -14,7 +14,7 @@ export default function MetadataStudio({ topic, metadata, setMetadata, isLoading
     
     setIsLocalLoading(true);
     try {
-      const result = await generateMetadata(topic);
+      const result = await generateMetadata(topic, videoType);
       setMetadata(result);
     } catch (error) {
       console.error(error);

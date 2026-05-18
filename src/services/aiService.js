@@ -8,7 +8,7 @@
 
 // Funciones Simuladas (Stubs) que muestran la estructura esperada:
 
-export const generateScript = async (topic, duration = "1 minuto") => {
+export const generateScript = async (topic, duration = "1 minuto", videoType = "historia") => {
   // Simulación de retraso de red
   await new Promise(resolve => setTimeout(resolve, 1500));
   
@@ -23,49 +23,99 @@ export const generateScript = async (topic, duration = "1 minuto") => {
     const end = (i + 1) * 5;
     const timeStr = `${Math.floor(start / 60)}:${(start % 60).toString().padStart(2, '0')} - ${Math.floor(end / 60)}:${(end % 60).toString().padStart(2, '0')}`;
     
-    script.push({
-      time: timeStr,
-      visual: i === 0 
-        ? `Escena de apertura: Título animado '${topic}' con colores vibrantes.` 
-        : `Escena ${i + 1}: El personaje interactúa con elementos de ${topic}.`,
-      audio: i === 0 
-        ? `¡Hola a todos! Hoy descubriremos el mundo de ${topic}.` 
-        : `¡Miren esto! ${topic} es realmente asombroso. Seguimos explorando.`
-    });
+    let visual = "";
+    let audio = "";
+
+    if (videoType === "musical") {
+      visual = i === 0 
+        ? `Escena de apertura: Título musical animado '${topic}' con notas musicales brillantes y luces de escenario.` 
+        : `Escena ${i + 1}: Personajes bailando al ritmo de la música, interactuando alegremente con elementos de ${topic}.`;
+      audio = i === 0 
+        ? `(Música alegre y pegadiza) 🎵 ¡Hola amigos! ¿Están listos para cantar y bailar con ${topic}?` 
+        : `(Estribillo pegadizo) 🎶 ¡Baila, baila, gira sin parar, con ${topic} vamos a disfrutar! 🎵`;
+    } else if (videoType === "narracion") {
+      visual = i === 0 
+        ? `Escena de apertura: Título estilo documental infantil '${topic}' con lupas animadas y gráficos curiosos.` 
+        : `Escena ${i + 1}: Animación explicativa con zoom y datos curiosos sobre ${topic}, mostrando detalles fascinantes.`;
+      audio = i === 1
+        ? `¡Hola pequeños exploradores! Hoy vamos a investigar a fondo y aprender cosas increíbles sobre ${topic}.`
+        : `¿Sabías este dato curioso? ${topic} es asombroso. ¡Sigamos observando con nuestra lupa mágica! 🔍`;
+    } else {
+      // default: historia / cuento
+      visual = i === 0 
+        ? `Escena de apertura: Un libro de cuentos mágico se abre mostrando el título '${topic}' entre destellos dorados.` 
+        : `Escena ${i + 1}: El personaje vive una emocionante aventura superando un obstáculo relacionado con ${topic}.`;
+      audio = i === 0 
+        ? `Había una vez, en un mundo lleno de magia y color, una gran aventura llamada ${topic}...` 
+        : `Y así, con mucho valor y amistad, nuestro héroe descubrió el secreto mágico de ${topic}. ✨`;
+    }
+    
+    script.push({ time: timeStr, visual, audio });
   }
 
   return script;
 };
 
-export const generateMetadata = async (topic) => {
+export const generateMetadata = async (topic, videoType = "historia") => {
   await new Promise(resolve => setTimeout(resolve, 1500));
   
-  /* ESQUEMA REAL:
-  const prompt = `Actúa como experto SEO para YouTube Infantil. Tema: ${topic}.
-  Genera 5 títulos virales, una descripción SEO y 15 hashtags.
-  Devuelve JSON: { "titles": ["..."], "description": "...", "hashtags": ["#..."] }`;
-  const result = await model.generateContent(prompt);
-  return JSON.parse(result.response.text());
-  */
+  if (videoType === "musical") {
+    return {
+      titles: [
+        `🎤 La Canción de ${topic} 🎶 | ¡Baila y Canta!`,
+        `🎵 ¡A Mover el Cuerpo! Ritmo y Diversión con ${topic} ✨`,
+        `🌟 ${topic}: El Video Musical Oficial para Niños 🚀`,
+        `¡Aprende Cantando sobre ${topic}! 🎧 (Música Infantil)`,
+        `🕺 Fiesta Musical Mágica con ${topic} 🎈`
+      ],
+      description: `¡Hola amiguitos cantantes! 🎤🎶 Prepárense para bailar y cantar sin parar con la canción oficial de ${topic}.\n\nUna melodía súper pegadiza y llena de ritmo para que toda la familia aprenda bailando. ¡Sube el volumen y a disfrutar!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más éxitos musicales infantiles.`,
+      hashtags: ['#CancionInfantil', '#MusicaParaNiños', '#Bailar', '#Cantar', '#Infantil', '#AprenderCantando', '#Diversion', '#Familia', '#YoutubeKids', '#Ritmo']
+    };
+  } else if (videoType === "narracion") {
+    return {
+      titles: [
+        `🔬 Aprende Todo Sobre ${topic} 🧠 | Datos Curiosos`,
+        `🔍 ¿Qué es ${topic}? Explicación Fácil para Niños 🚀`,
+        `💡 5 Curiosidades Increíbles de ${topic} que No Sabías 😱`,
+        `🌍 Explorando el Mundo de ${topic} (Video Educativo) 📚`,
+        `¡Misión Explorador! Descubriendo los Secretos de ${topic} 🕵️‍♂️`
+      ],
+      description: `¡Hola pequeños exploradores! 🔍🎒 Hoy nos ponemos las gafas de investigar para descubrir todos los secretos y datos curiosos sobre ${topic}.\n\nUn video educativo, fácil de entender y súper entretenido para mentes curiosas. ¡Acompáñanos en esta misión de aprendizaje!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más videos educativos.`,
+      hashtags: ['#Educativo', '#Curiosidades', '#AprenderJugando', '#NiñosExploradores', '#CienciaInfantil', '#DatosCuriosos', '#Infantil', '#Conocimiento', '#YoutubeKids', '#Aprender']
+    };
+  }
 
+  // default: historia
   return {
     titles: [
-      `🌟 La Mejor Aventura de ${topic} para Niños!`,
-      `¡Increíble! Descubre el Secreto de ${topic} 😱`,
-      `Aprende sobre ${topic} Cantando y Jugando 🎵`,
-      `El Misterio Mágico de ${topic} ✨ (Para Niños)`,
-      `¿Qué pasa con ${topic}? ¡Acompáñanos a descubrirlo! 🚀`
+      `📖 El Cuento Mágico de ${topic} ✨ | Historias para Niños`,
+      `🌟 La Gran Aventura de ${topic} 🚀 (Cuento Infantil)`,
+      `🏰 Había una vez... El Misterio de ${topic} 🦄`,
+      `💤 Cuento para Dormir y Soñar con ${topic} 🌙`,
+      `¡Emocionante! La Historia Secreta de ${topic} 🎈`
     ],
-    description: `¡Hola exploradores! 👋 En este video mágico y súper divertido, vamos a aprender todo sobre ${topic}.\n\nAcompáñanos en esta increíble aventura llena de colores, canciones y mucha diversión. ¡Ideal para aprender jugando!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más aventuras mágicas.`,
-    hashtags: ['#Infantil', '#AprenderJugando', '#Niños', '#VideosParaNiños', '#Diversion', '#Familia', '#Magia', '#Educativo', '#Colores', '#Aventuras', '#CancionesInfantiles', '#Juegos', '#YoutubeKids', '#Aprender', '#Cuentos']
+    description: `¡Hola soñadores! 📖✨ Abran bien los ojos y prepárense para escuchar el cuento mágico más hermoso sobre ${topic}.\n\nAcompáñanos en esta increíble aventura llena de fantasía, amistad y valiosas lecciones. ¡Ideal para disfrutar en familia o antes de dormir!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más cuentos mágicos.`,
+    hashtags: ['#CuentosInfantiles', '#HistoriasParaNiños', '#CuentoMagico', '#Infantil', '#HoraDeDormir', '#Aventuras', '#Familia', '#Magia', '#Valores', '#YoutubeKids']
   };
 };
 
-export const generateThumbnailIdeas = async (topic) => {
+export const generateThumbnailIdeas = async (topic, videoType = "historia") => {
   await new Promise(resolve => setTimeout(resolve, 1500));
   
-  return {
-    visualPrompt: `Diseño de miniatura para YouTube de alta calidad, render 3D estilo Pixar/Disney, colores ultra vibrantes. En el centro, un personaje mascota lindo y muy expresivo mirando al espectador con ojos grandes y brillantes y una boca emocionada y alegre. A la derecha, un ícono gigante, luminoso y mágico que representa "${topic}", rodeado de destellos flotantes, estelas de luz y reflejos de lente. El fondo es un degradado brillante y saturado (por ejemplo, azul profundo a amarillo eléctrico) para garantizar una alta tasa de clics. Resolución 8K, render Octane, iluminación cinematográfica, extremadamente detallado, composición profesional.`,
-    suggestedText: "¡INCREÍBLE!"
-  };
+  let visualPrompt = "";
+  let suggestedText = "";
+
+  if (videoType === "musical") {
+    visualPrompt = `Diseño de miniatura para YouTube de alta calidad, render 3D estilo Pixar/Disney, colores ultra vibrantes y de neón. En el centro, un personaje mascota lindo sosteniendo un micrófono brillante, cantando y bailando alegremente en un escenario con luces coloridas y notas musicales flotantes 3D. A un lado, un gran elemento mágico representando "${topic}". Resolución 8K, iluminación de concierto cinematográfica.`;
+    suggestedText = "¡A CANTAR!";
+  } else if (videoType === "narracion") {
+    visualPrompt = `Diseño de miniatura para YouTube de alta calidad, render 3D estilo Pixar/Disney, colores ultra vibrantes y nítidos. En el centro, un personaje mascota lindo vestido de explorador con lupa y sombrero de safari, mirando asombrado un elemento gigante y detallado que representa "${topic}". Alrededor hay signos de interrogación flotantes y destellos de curiosidad. Resolución 8K, iluminación de estudio limpia y brillante.`;
+    suggestedText = "¿SABÍAS QUÉ?";
+  } else {
+    // historia
+    visualPrompt = `Diseño de miniatura para YouTube de alta calidad, render 3D estilo Pixar/Disney, colores ultra vibrantes y mágicos. En el centro, un enorme libro de cuentos antiguo abriéndose, del cual salen rayos de luz dorada, polvo de estrellas y un hermoso escenario 3D que representa "${topic}". Un personaje mascota lindo mira el libro con ojos llenos de asombro y emoción. Resolución 8K, iluminación mágica de cuento de hadas.`;
+    suggestedText = "¡CUENTO MÁGICO!";
+  }
+
+  return { visualPrompt, suggestedText };
 };
