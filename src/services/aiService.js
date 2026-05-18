@@ -28,35 +28,35 @@ const getFallbackScript = (topic, duration, videoType) => {
         musicPrompt: "energetic children's pop, happy upbeat rhythm, fun synthesizer, catchy male vocal",
         versePrompts: [
           [
-            { line: "Con gran alegría vamos a empezar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje mascota sonriendo emocionado al comenzar un juego sobre ${cleanTopic}.` },
-            { line: "este nuevo juego para disfrutar.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo lindo personaje abriendo una caja mágica llena de elementos coloridos de ${cleanTopic}.` },
-            { line: "Da un paso al frente y ponte a girar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo lindo personaje dando una pirueta alegre en un escenario brillante con luces mágicas.` },
-            { line: `que con ${cleanTopic} te va a encantar.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo lindo personaje abrazando un gran emblema brillante y festivo de ${cleanTopic}.` }
+            { line: "Con gran alegría vamos a empezar,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un lindo personaje mascota sonriendo emocionado al comenzar un juego sobre ${cleanTopic}.` },
+            { line: "este nuevo juego para disfrutar.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El mismo lindo personaje abriendo una caja mágica llena de elementos coloridos de ${cleanTopic}.` },
+            { line: "Da un paso al frente y ponte a girar,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El mismo lindo personaje dando una pirueta alegre en un escenario brillante con luces mágicas.` },
+            { line: `que con ${cleanTopic} te va a encantar.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El mismo lindo personaje abrazando un gran emblema brillante y festivo de ${cleanTopic}.` }
           ],
           [
-            { line: "Mira los colores brillando al compás,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo lindo personaje mirando notas musicales multicolores flotando a su alrededor.` },
-            { line: "salta muy bien alto, un poquito más.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo lindo personaje saltando en un trampolín mágico entre nubes de algodón de azúcar.` },
-            { line: "Todos los amigos vienen por detrás,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un alegre desfile de animalitos y amigos siguiendo al personaje principal con serpentinas.` },
-            { line: `junto con ${cleanTopic} paz y amor tendrás.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Todos los amigos reunidos en un hermoso jardín radiante celebrando la magia de ${cleanTopic}.` }
+            { line: "Mira los colores brillando al compás,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El mismo lindo personaje mirando notas musicales multicolores flotando a su alrededor.` },
+            { line: "salta muy bien alto, un poquito más.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El mismo lindo personaje saltando en un trampolín mágico entre nubes de algodón de azúcar.` },
+            { line: "Todos los amigos vienen por detrás,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un alegre desfile de animalitos y amigos siguiendo al personaje principal con serpentinas.` },
+            { line: `junto con ${cleanTopic} paz y amor tendrás.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Todos los amigos reunidos en un hermoso jardín radiante celebrando la magia de ${cleanTopic}.` }
           ],
           [
-            { line: "Bajo las estrellas o el sol de cristal,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje principal mirando un cielo mágico donde conviven el sol y estrellas brillantes.` },
-            { line: "esta melodía suena sin igual.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Instrumentos mágicos animados tocando solos una dulce melodía alrededor del personaje.` },
-            { line: "Mueve la cabeza de un modo genial,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje principal con audífonos grandes y coloridos bailando con mucho estilo.` },
-            { line: `que con ${cleanTopic} todo es especial.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una explosión de confeti y luces de neón formando el nombre de ${cleanTopic}.` }
+            { line: "Bajo las estrellas o el sol de cristal,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje principal mirando un cielo mágico donde conviven el sol y estrellas brillantes.` },
+            { line: "esta melodía suena sin igual.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Instrumentos mágicos animados tocando solos una dulce melodía alrededor del personaje.` },
+            { line: "Mueve la cabeza de un modo genial,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje principal con audífonos grandes y coloridos bailando con mucho estilo.` },
+            { line: `que con ${cleanTopic} todo es especial.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una explosión de confeti y luces de neón formando el nombre de ${cleanTopic}.` }
           ],
           [
-            { line: "Sube ya las manos, aplaude con fe,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje principal aplaudiendo alegremente bajo un foco de luz cálida de teatro.` },
-            { line: "gira a la derecha, uno, dos y tres.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje principal haciendo una divertida coreografía junto a tres simpáticos pajaritos.` },
-            { line: "Guarda este recuerdo mágico otra vez,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje principal guardando un destello de luz en un frasco de cristal mágico.` },
-            { line: `junto con ${cleanTopic} todo sale bien.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Gran escena final con todos los personajes sonriendo y saludando en un escenario festivo de ${cleanTopic}.` }
+            { line: "Sube ya las manos, aplaude con fe,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje principal aplaudiendo alegremente bajo un foco de luz cálida de teatro.` },
+            { line: "gira a la derecha, uno, dos y tres.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje principal haciendo una divertida coreografía junto a tres simpáticos pajaritos.` },
+            { line: "Guarda este recuerdo mágico otra vez,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje principal guardando un destello de luz en un frasco de cristal mágico.` },
+            { line: `junto con ${cleanTopic} todo sale bien.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Gran escena final con todos los personajes sonriendo y saludando en un escenario festivo de ${cleanTopic}.` }
           ]
         ],
         chorusPrompts: [
-          { line: "¡Baila, canta, ríe sin parar!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje principal y sus amigos en una gran fiesta de baile con luces de colores y burbujas.` },
-          { line: `Con ${cleanTopic} vamos a soñar.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje principal durmiendo plácidamente sobre una nube flotante con elementos mágicos de ${cleanTopic}.` },
-          { line: "¡Da una vuelta entera y vuelve a saltar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje principal dando un gran salto acrobático lleno de energía y chispas doradas.` },
-          { line: "que esta fiesta nunca va a terminar!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un espectacular castillo de fuegos artificiales iluminando un carnaval infantil lleno de alegría.` }
+          { line: "¡Baila, canta, ríe sin parar!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje principal y sus amigos en una gran fiesta de baile con luces de colores y burbujas.` },
+          { line: `Con ${cleanTopic} vamos a soñar.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje principal durmiendo plácidamente sobre una nube flotante con elementos mágicos de ${cleanTopic}.` },
+          { line: "¡Da una vuelta entera y vuelve a saltar,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje principal dando un gran salto acrobático lleno de energía y chispas doradas.` },
+          { line: "que esta fiesta nunca va a terminar!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un espectacular castillo de fuegos artificiales iluminando un carnaval infantil lleno de alegría.` }
         ]
       },
       // Canción 1: Mágica / Soñadora
@@ -71,35 +71,35 @@ const getFallbackScript = (topic, duration, videoType) => {
         musicPrompt: "soft magical lullaby, sweet acoustic guitar, gentle chimes, calming female vocal, dreamy atmosphere",
         versePrompts: [
           [
-            { line: "Una luz destella en el cielo azul,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje mirando una estrella fugaz brillante en un cielo nocturno azul profundo.` },
-            { line: "brilla suavemente como un gran tul.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo personaje envuelto en una estela de luz mágica y polvo de estrellas.` },
-            { line: "Abre bien los ojos, mira qué quietud,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje caminando de puntillas por un bosque encantado de árboles luminosos.` },
-            { line: `hoy con ${cleanTopic} nace una virtud.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje encontrando una flor de cristal brillante que representa ${cleanTopic}.` }
+            { line: "Una luz destella en el cielo azul,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un lindo personaje mirando una estrella fugaz brillante en un cielo nocturno azul profundo.` },
+            { line: "brilla suavemente como un gran tul.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El mismo personaje envuelto en una estela de luz mágica y polvo de estrellas.` },
+            { line: "Abre bien los ojos, mira qué quietud,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje caminando de puntillas por un bosque encantado de árboles luminosos.` },
+            { line: `hoy con ${cleanTopic} nace una virtud.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje encontrando una flor de cristal brillante que representa ${cleanTopic}.` }
           ],
           [
-            { line: "Flotan las burbujas lentas hacia el sol,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Burbujas gigantes y tornasoladas flotando en un prado mágico al amanecer.` },
-            { line: "pintan mil caminos de un bello color.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje pintando un arcoíris en el aire con una varita mágica.` },
-            { line: "Siente la tibieza de este gran calor,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje abrazando un pequeño sol animado y sonriente.` },
-            { line: `junto con ${cleanTopic} todo es mucho mejor.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje y sus amigos sentados alrededor de una fogata mágica de ${cleanTopic}.` }
+            { line: "Flotan las burbujas lentas hacia el sol,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Burbujas gigantes y tornasoladas flotando en un prado mágico al amanecer.` },
+            { line: "pintan mil caminos de un bello color.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje pintando un arcoíris en el aire con una varita mágica.` },
+            { line: "Siente la tibieza de este gran calor,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje abrazando un pequeño sol animado y sonriente.` },
+            { line: `junto con ${cleanTopic} todo es mucho mejor.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje y sus amigos sentados alrededor de una fogata mágica de ${cleanTopic}.` }
           ],
           [
-            { line: "Cierra las pestañas, pide un gran deseo,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje con los ojos cerrados soplando un diente de león brillante.` },
-            { line: "vuela por las nubes en un balanceo.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje meciéndose en un columpio que cuelga de una luna creciente.` },
-            { line: "Suena una cajita con un tintineo,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una cajita musical de madera tallada abriéndose con bailarinas de luz.` },
-            { line: `que con ${cleanTopic} gana el trofeo.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje levantando un trofeo de estrella dorada con el símbolo de ${cleanTopic}.` }
+            { line: "Cierra las pestañas, pide un gran deseo,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje con los ojos cerrados soplando un diente de león brillante.` },
+            { line: "vuela por las nubes en un balanceo.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje meciéndose en un columpio que cuelga de una luna creciente.` },
+            { line: "Suena una cajita con un tintineo,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una cajita musical de madera tallada abriéndose con bailarinas de luz.` },
+            { line: `que con ${cleanTopic} gana el trofeo.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje levantando un trofeo de estrella dorada con el símbolo de ${cleanTopic}.` }
           ],
           [
-            { line: "Guarda el secreto en tu corazón,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje guardando una llave dorada en un cofre mágico del tesoro.` },
-            { line: "canta muy bajito esta bella canción.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje susurrando una melodía a un pajarito azul que descansa en su mano.` },
-            { line: "Duerme muy tranquilo en tu habitación,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje arropado en una cama con sábanas de nubes y móviles de planetas.` },
-            { line: `junto con ${cleanTopic} y con emoción.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Vista exterior de una casita mágica bajo un cielo estrellado con un letrero de ${cleanTopic}.` }
+            { line: "Guarda el secreto en tu corazón,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje guardando una llave dorada en un cofre mágico del tesoro.` },
+            { line: "canta muy bajito esta bella canción.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje susurrando una melodía a un pajarito azul que descansa en su mano.` },
+            { line: "Duerme muy tranquilo en tu habitación,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje arropado en una cama con sábanas de nubes y móviles de planetas.` },
+            { line: `junto con ${cleanTopic} y con emoción.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Vista exterior de una casita mágica bajo un cielo estrellado con un letrero de ${cleanTopic}.` }
           ]
         ],
         chorusPrompts: [
-          { line: "¡Vuela, sueña, flota sin temor!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje volando con alitas de luz sobre un mar de nubes rosadas.` },
-          { line: `Con ${cleanTopic} siente el amor.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Corazones flotantes de neón rodeando al personaje y sus amigos de ${cleanTopic}.` },
-          { line: "¡Deja que las estrellas te den su resplandor,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una lluvia de estrellas fugaces iluminando un hermoso palacio de cristal.` },
-          { line: "que esta noche mágica tiene un gran color!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje durmiendo feliz con una sonrisa pacífica bajo un móvil mágico.` }
+          { line: "¡Vuela, sueña, flota sin temor!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje volando con alitas de luz sobre un mar de nubes rosadas.` },
+          { line: `Con ${cleanTopic} siente el amor.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Corazones flotantes de neón rodeando al personaje y sus amigos de ${cleanTopic}.` },
+          { line: "¡Deja que las estrellas te den su resplandor,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una lluvia de estrellas fugaces iluminando un hermoso palacio de cristal.` },
+          { line: "que esta noche mágica tiene un gran color!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje durmiendo feliz con una sonrisa pacífica bajo un móvil mágico.` }
         ]
       },
       // Canción 2: Divertida / Salto
@@ -114,35 +114,35 @@ const getFallbackScript = (topic, duration, videoType) => {
         musicPrompt: "fast bouncy electro pop, playful rhythm, energetic beats, joyful kid chorus",
         versePrompts: [
           [
-            { line: "Salta que salta sin mirar atrás,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje saltando con zapatos de resortes en un parque futurista.` },
-            { line: "este gran rebote te divertirá.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo personaje rebotando muy alto contra pelotas gigantes de goma de colores.` },
-            { line: "Mueve las rodillas, un salto audaz,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje haciendo una pose acrobática divertida en el aire.` },
-            { line: `hoy con ${cleanTopic} nadie parará.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una multitud de animalitos aplaudiendo y animando con carteles de ${cleanTopic}.` }
+            { line: "Salta que salta sin mirar atrás,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un lindo personaje saltando con zapatos de resortes en un parque futurista.` },
+            { line: "este gran rebote te divertirá.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El mismo personaje rebotando muy alto contra pelotas gigantes de goma de colores.` },
+            { line: "Mueve las rodillas, un salto audaz,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje haciendo una pose acrobática divertida en el aire.` },
+            { line: `hoy con ${cleanTopic} nadie parará.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una multitud de animalitos aplaudiendo y animando con carteles de ${cleanTopic}.` }
           ],
           [
-            { line: "Toca ya el cielo con el zapatón,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El zapato del personaje tocando una nube esponjosa con chispas mágicas.` },
-            { line: "cae suavecito en un gran colchón.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje aterrizando riendo sobre un enorme cojín de gelatina multicolor.` },
-            { line: "Ríen los amigos con gran emoción,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Tres amigos simpáticos riendo a carcajadas sosteniéndose la barriga.` },
-            { line: `junto con ${cleanTopic} en esta ocasión.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Todos celebrando alrededor de una gran torre de juguetes de ${cleanTopic}.` }
+            { line: "Toca ya el cielo con el zapatón,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El zapato del personaje tocando una nube esponjosa con chispas mágicas.` },
+            { line: "cae suavecito en un gran colchón.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje aterrizando riendo sobre un enorme cojín de gelatina multicolor.` },
+            { line: "Ríen los amigos con gran emoción,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Tres amigos simpáticos riendo a carcajadas sosteniéndose la barriga.` },
+            { line: `junto con ${cleanTopic} en esta ocasión.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Todos celebrando alrededor de una gran torre de juguetes de ${cleanTopic}.` }
           ],
           [
-            { line: "Gira como trompo, vuelve a comenzar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje girando rápidamente creando un torbellino de colores y confeti.` },
-            { line: "este baile loco te va a fascinar.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una pista de baile con baldosas que se iluminan al pisarlas.` },
-            { line: "Choca las manitas, ponte a zapatear,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje chocando los cinco con un robot amigable y simpático.` },
-            { line: `que con ${cleanTopic} vamos a triunfar.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Fuegos artificiales de día formando el emblema de ${cleanTopic} en el cielo.` }
+            { line: "Gira como trompo, vuelve a comenzar,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje girando rápidamente creando un torbellino de colores y confeti.` },
+            { line: "este baile loco te va a fascinar.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una pista de baile con baldosas que se iluminan al pisarlas.` },
+            { line: "Choca las manitas, ponte a zapatear,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje chocando los cinco con un robot amigable y simpático.` },
+            { line: `que con ${cleanTopic} vamos a triunfar.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Fuegos artificiales de día formando el emblema de ${cleanTopic} en el cielo.` }
           ],
           [
-            { line: "Corre muy deprisa, llega hasta el final,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje corriendo por una pista de carreras colorida cruzando una cinta de meta.` },
-            { line: "esta competencia ha sido genial.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Confeti cayendo sobre el podio de ganadores con copas brillantes.` },
-            { line: "Alza la bandera de modo triunfal,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje ondeando una gran bandera brillante con estrellas doradas.` },
-            { line: `junto con ${cleanTopic} fiesta sin igual.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Gran foto grupal de todos los personajes saltando felices celebrando ${cleanTopic}.` }
+            { line: "Corre muy deprisa, llega hasta el final,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje corriendo por una pista de carreras colorida cruzando una cinta de meta.` },
+            { line: "esta competencia ha sido genial.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Confeti cayendo sobre el podio de ganadores con copas brillantes.` },
+            { line: "Alza la bandera de modo triunfal,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje ondeando una gran bandera brillante con estrellas doradas.` },
+            { line: `junto con ${cleanTopic} fiesta sin igual.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Gran foto grupal de todos los personajes saltando felices celebrando ${cleanTopic}.` }
           ]
         ],
         chorusPrompts: [
-          { line: "¡Salta, brinca, corre sin parar!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje y sus amigos saltando en una mega colchoneta inflable de castillo.` },
-          { line: `Con ${cleanTopic} vamos a jugar.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una feria de juegos espectacular llena de luces y atracciones de ${cleanTopic}.` },
-          { line: "¡Siente la energía que te va a llenar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Rayos de luz dorada y chispas de energía rodeando al personaje sonriente.` },
-          { line: "que este juego loco nunca va a acabar!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Globos gigantes soltándose al cielo en una celebración masiva y colorida.` }
+          { line: "¡Salta, brinca, corre sin parar!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje y sus amigos saltando en una mega colchoneta inflable de castillo.` },
+          { line: `Con ${cleanTopic} vamos a jugar.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una feria de juegos espectacular llena de luces y atracciones de ${cleanTopic}.` },
+          { line: "¡Siente la energía que te va a llenar,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Rayos de luz dorada y chispas de energía rodeando al personaje sonriente.` },
+          { line: "que este juego loco nunca va a acabar!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Globos gigantes soltándose al cielo en una celebración masiva y colorida.` }
         ]
       },
       // Canción 3: Curiosa / Exploración
@@ -157,35 +157,35 @@ const getFallbackScript = (topic, duration, videoType) => {
         musicPrompt: "curious acoustic pop, light percussion, marimba, inquisitive upbeat melody, cheerful vocals",
         versePrompts: [
           [
-            { line: "Toma tu lupa, vamos a buscar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje con sombrero de explorador mirando a través de una lupa gigante brillante.` },
-            { line: "un gran misterio en este lugar.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un mapa del tesoro antiguo brillando sobre una mesa de madera rústica.` },
-            { line: "Mira las huellas que van por allá,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Huellas de patitas brillantes de color neón marcadas en un sendero de tierra.` },
-            { line: `hoy con ${cleanTopic} te sorprenderás.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje descubriendo un artefacto mágico brillante relacionado con ${cleanTopic}.` }
+            { line: "Toma tu lupa, vamos a buscar,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un lindo personaje con sombrero de explorador mirando a través de una lupa gigante brillante.` },
+            { line: "un gran misterio en este lugar.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un mapa del tesoro antiguo brillando sobre una mesa de madera rústica.` },
+            { line: "Mira las huellas que van por allá,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Huellas de patitas brillantes de color neón marcadas en un sendero de tierra.` },
+            { line: `hoy con ${cleanTopic} te sorprenderás.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje descubriendo un artefacto mágico brillante relacionado con ${cleanTopic}.` }
           ],
           [
-            { line: "Abre la libreta, apunta muy bien,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje escribiendo con una pluma luminosa en una libreta de cuero con broche de oro.` },
-            { line: "estos secretos que pocos los ven.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Símbolos mágicos flotando en el aire revelándose bajo una luz ultravioleta mágica.` },
-            { line: "Sigue la pista del viejo andén,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un trenecito de juguete antiguo pasando por un túnel misterioso iluminado.` },
-            { line: `junto con ${cleanTopic} marchando al cien.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un equipo de simpáticos exploradores marchando con mochilas y linternas de ${cleanTopic}.` }
+            { line: "Abre la libreta, apunta muy bien,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje escribiendo con una pluma luminosa en una libreta de cuero con broche de oro.` },
+            { line: "estos secretos que pocos los ven.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Símbolos mágicos flotando en el aire revelándose bajo una luz ultravioleta mágica.` },
+            { line: "Sigue la pista del viejo andén,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un trenecito de juguete antiguo pasando por un túnel misterioso iluminado.` },
+            { line: `junto con ${cleanTopic} marchando al cien.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un equipo de simpáticos exploradores marchando con mochilas y linternas de ${cleanTopic}.` }
           ],
           [
-            { line: "Usa el sombrero de buen detective,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje ajustándose una gabardina y sombrero a cuadros estilo Sherlock Holmes.` },
-            { line: "mira qué cosas la ciencia concibe.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Tubos de ensayo coloridos burbujeando con humo mágico en un laboratorio infantil.` },
-            { line: "Este misterio en tu mente vive,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Engranajes mágicos y bombillas de luz encendiéndose sobre la cabeza del personaje.` },
-            { line: `que con ${cleanTopic} a todos cautive.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una gran pantalla holográfica mostrando un modelo 3D giratorio de ${cleanTopic}.` }
+            { line: "Usa el sombrero de buen detective,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje ajustándose una gabardina y sombrero a cuadros estilo Sherlock Holmes.` },
+            { line: "mira qué cosas la ciencia concibe.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Tubos de ensayo coloridos burbujeando con humo mágico en un laboratorio infantil.` },
+            { line: "Este misterio en tu mente vive,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Engranajes mágicos y bombillas de luz encendiéndose sobre la cabeza del personaje.` },
+            { line: `que con ${cleanTopic} a todos cautive.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una gran pantalla holográfica mostrando un modelo 3D giratorio de ${cleanTopic}.` }
           ],
           [
-            { line: "Ya descubrimos la gran verdad,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un cofre misterioso abriéndose revelando un cristal brillante y radiante.` },
-            { line: "con mucha astucia y curiosidad.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje guiñando un ojo y sosteniendo una lupa con orgullo.` },
-            { line: "Celebraremos con felicidad,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Globos y serpentinas saliendo de cañones de confeti en una biblioteca mágica.` },
-            { line: `junto con ${cleanTopic} y en amistad.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Todos los amigos exploradores chocando sus tazas de chocolate caliente celebrando ${cleanTopic}.` }
+            { line: "Ya descubrimos la gran verdad,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un cofre misterioso abriéndose revelando un cristal brillante y radiante.` },
+            { line: "con mucha astucia y curiosidad.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje guiñando un ojo y sosteniendo una lupa con orgullo.` },
+            { line: "Celebraremos con felicidad,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Globos y serpentinas saliendo de cañones de confeti en una biblioteca mágica.` },
+            { line: `junto con ${cleanTopic} y en amistad.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Todos los amigos exploradores chocando sus tazas de chocolate caliente celebrando ${cleanTopic}.` }
           ]
         ],
         chorusPrompts: [
-          { line: "¡Busca, explora, mira con atención!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje investigando un enorme árbol hueco lleno de cristales brillantes.` },
-          { line: `Con ${cleanTopic} en cada rincón.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una habitación mágica llena de libros voladores y telescopios apuntando a ${cleanTopic}.` },
-          { line: "¡Descubre el secreto de esta gran misión,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una puerta secreta de piedra abriéndose hacia un jardín secreto resplandeciente.` },
-          { line: "que aprender es una hermosa pasión!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje graduándose con un birrete brillante y un diploma mágico de explorador.` }
+          { line: "¡Busca, explora, mira con atención!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje investigando un enorme árbol hueco lleno de cristales brillantes.` },
+          { line: `Con ${cleanTopic} en cada rincón.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una habitación mágica llena de libros voladores y telescopios apuntando a ${cleanTopic}.` },
+          { line: "¡Descubre el secreto de esta gran misión,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una puerta secreta de piedra abriéndose hacia un jardín secreto resplandeciente.` },
+          { line: "que aprender es una hermosa pasión!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje graduándose con un birrete brillante y un diploma mágico de explorador.` }
         ]
       },
       // Canción 4: Festiva / Carnaval
@@ -200,35 +200,35 @@ const getFallbackScript = (topic, duration, videoType) => {
         musicPrompt: "festive latin pop, carnival rhythm, accordion, brass section, very happy upbeat dance",
         versePrompts: [
           [
-            { line: "Suenan tambores, empieza el compás,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un lindo personaje tocando un tambor brillante con baquetas que desprenden chispas.` },
-            { line: "este gran ritmo te va a atrapar.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Notas musicales tridimensionales bailando y girando alrededor de un escenario festivo.` },
-            { line: "Ponte el disfraz de un color muy vivaz,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje probándose un sombrero de arlequín colorido con cascabeles dorados.` },
-            { line: `hoy con ${cleanTopic} vamos a bailar.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una pista de carnaval al aire libre llena de animalitos disfrazados celebrando ${cleanTopic}.` }
+            { line: "Suenan tambores, empieza el compás,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un lindo personaje tocando un tambor brillante con baquetas que desprenden chispas.` },
+            { line: "este gran ritmo te va a atrapar.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Notas musicales tridimensionales bailando y girando alrededor de un escenario festivo.` },
+            { line: "Ponte el disfraz de un color muy vivaz,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje probándose un sombrero de arlequín colorido con cascabeles dorados.` },
+            { line: `hoy con ${cleanTopic} vamos a bailar.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una pista de carnaval al aire libre llena de animalitos disfrazados celebrando ${cleanTopic}.` }
           ],
           [
-            { line: "Toca la flauta con mucha ilusión,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un osito simpático tocando una flauta mágica de la que salen mariposas de luz.` },
-            { line: "sigue las palmas de esta canción.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una multitud alegre aplaudiendo al unísono bajo guirnaldas de luces de colores.` },
-            { line: "Lluvia de dulces en cada rincón,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Caramelos y paletas gigantes cayendo suavemente del cielo en paracaídas.` },
-            { line: `junto con ${cleanTopic} y en el corazón.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una gran piñata con forma de estrella rompiéndose soltando premios de ${cleanTopic}.` }
+            { line: "Toca la flauta con mucha ilusión,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un osito simpático tocando una flauta mágica de la que salen mariposas de luz.` },
+            { line: "sigue las palmas de esta canción.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una multitud alegre aplaudiendo al unísono bajo guirnaldas de luces de colores.` },
+            { line: "Lluvia de dulces en cada rincón,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Caramelos y paletas gigantes cayendo suavemente del cielo en paracaídas.` },
+            { line: `junto con ${cleanTopic} y en el corazón.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una gran piñata con forma de estrella rompiéndose soltando premios de ${cleanTopic}.` }
           ],
           [
-            { line: "Sube a la carroza que va a desfilar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una carroza de carnaval espectacular decorada con flores luminosas y ruedas doradas.` },
-            { line: "lucen mil luces de un brillo estelar.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Focos de teatro y rayos láser multicolores iluminando el cielo nocturno del desfile.` },
-            { line: "Toca la trompeta, ponte a marchar,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje tocando una trompeta dorada liderando una banda de música infantil.` },
-            { line: `que con ${cleanTopic} vamos a gozar.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Globos aerostáticos coloridos sobrevolando el carnaval de ${cleanTopic}.` }
+            { line: "Sube a la carroza que va a desfilar,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una carroza de carnaval espectacular decorada con flores luminosas y ruedas doradas.` },
+            { line: "lucen mil luces de un brillo estelar.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Focos de teatro y rayos láser multicolores iluminando el cielo nocturno del desfile.` },
+            { line: "Toca la trompeta, ponte a marchar,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje tocando una trompeta dorada liderando una banda de música infantil.` },
+            { line: `que con ${cleanTopic} vamos a gozar.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Globos aerostáticos coloridos sobrevolando el carnaval de ${cleanTopic}.` }
           ],
           [
-            { line: "Cae confeti de cinta y papel,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Una tormenta mágica de confeti brillante y cintas doradas cubriendo a los personajes.` },
-            { line: "este momento es dulce como miel.", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje compartiendo un enorme algodón de azúcar con un amigo.` },
-            { line: "Guarda el recuerdo en un gran carrusel,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un hermoso carrusel iluminado girando con caballitos de cristal mágicos.` },
-            { line: `junto con ${cleanTopic} pintando el pincel.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Gran escena final de carnaval con todos bailando bajo fuegos artificiales de ${cleanTopic}.` }
+            { line: "Cae confeti de cinta y papel,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Una tormenta mágica de confeti brillante y cintas doradas cubriendo a los personajes.` },
+            { line: "este momento es dulce como miel.", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje compartiendo un enorme algodón de azúcar con un amigo.` },
+            { line: "Guarda el recuerdo en un gran carrusel,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un hermoso carrusel iluminado girando con caballitos de cristal mágicos.` },
+            { line: `junto con ${cleanTopic} pintando el pincel.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Gran escena final de carnaval con todos bailando bajo fuegos artificiales de ${cleanTopic}.` }
           ]
         ],
         chorusPrompts: [
-          { line: "¡Canta, desfila, ríe con pasión!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El personaje bailando samba alegremente con un traje brillante de plumas de luz.` },
-          { line: `Con ${cleanTopic} en esta celebración.`, prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un espectáculo de fuentes de agua danzantes iluminadas con los colores de ${cleanTopic}.` },
-          { line: "¡Siente la música y el acordeón,", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. Un simpático gato tocando un acordeón festivo rodeado de notas musicales brillantes.` },
-          { line: "que este carnaval es pura emoción!", prompt: `Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El cielo nocturno iluminado por un espectáculo masivo de drones formando a ${cleanTopic}.` }
+          { line: "¡Canta, desfila, ríe con pasión!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El personaje bailando samba alegremente con un traje brillante de plumas de luz.` },
+          { line: `Con ${cleanTopic} en esta celebración.`, prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un espectáculo de fuentes de agua danzantes iluminadas con los colores de ${cleanTopic}.` },
+          { line: "¡Siente la música y el acordeón,", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. Un simpático gato tocando un acordeón festivo rodeado de notas musicales brillantes.` },
+          { line: "que este carnaval es pura emoción!", prompt: `3D estilo cartoon infantil, brillo, colores vibrantes. El cielo nocturno iluminado por un espectáculo masivo de drones formando a ${cleanTopic}.` }
         ]
       }
     ];
@@ -417,10 +417,10 @@ REGLAS PARA EL PROMPT MUSICAL ("musicPrompt"):
 REGLAS PARA LOS PROMPTS DE IMÁGENES ("imagePrompts") Y COHERENCIA DE PERSONAJES:
 - Para cada sección, debes proporcionar un array "imagePrompts".
 - Por cada una de las líneas de la letra en esa sección, genera un objeto con la línea exacta ("line") y un prompt de imagen por IA ("prompt") que represente lo que dice esa línea.
-- REGLA ESTRICTA DE COHERENCIA DE ESTILO: Todos y cada uno de los prompts generados DEBEN comenzar exactamente con la misma instrucción de estilo maestro: "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio."
+- REGLA ESTRICTA DE COHERENCIA DE ESTILO: Todos y cada uno de los prompts generados DEBEN comenzar exactamente con la misma instrucción de estilo maestro: "3D estilo cartoon infantil, brillo, colores vibrantes."
 - REGLA MAESTRA DE COHERENCIA DE PERSONAJES (¡CRÍTICO PARA LA ARMONÍA DEL VIDEO!): Para que las IAs generadoras de imágenes (DALL-E 3, Midjourney, Ideogram, etc.) mantengan al mismo personaje a lo largo de todo el video y no cambien su apariencia en cada foto, DEBES INVENTAR UNA DESCRIPCIÓN VISUAL FIJA Y EXTREMADAMENTE DETALLADA del personaje o personajes principales (sean niños, animales o ambos) al inicio del proceso y REPETIR ESA EXACTA DESCRIPCIÓN VISUAL VERBATIM en todos y cada uno de los prompts de la canción.
 - Por ejemplo, si el protagonista es un perrito, NO escribas solo "un perrito travieso". Debes inventar y usar en todos los prompts una descripción fija como: "El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante". Si es un oso: "El mismo oso pardo bebé gordito, con pelaje suave color canela, grandes ojos negros expresivos y un moño rojo en el cuello". Si es un niño: "El mismo niño de 5 años con cabello castaño rizado, pecas en las mejillas, usando una camiseta amarilla y overoles de mezclilla".
-- Estructura obligatoria de cada prompt: "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. [DESCRIPCIÓN VISUAL FIJA DEL PERSONAJE PRINCIPAL], [Acción y entorno específico de la línea actual]."
+- Estructura obligatoria de cada prompt: "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN VISUAL FIJA DEL PERSONAJE PRINCIPAL], [Acción y entorno específico de la línea actual]."
 - Mantén esta coherencia escrupulosamente en todos los versos y coros.
 - Para las repeticiones del Coro (después del Verso 2, Verso 3, Verso 4), puedes dejar el array "imagePrompts" vacío o repetir el mismo del primer coro, ya que en la interfaz mostraremos los prompts del coro una única vez.
 
@@ -430,16 +430,16 @@ Devuelve estrictamente un array JSON de objetos con el formato:
     "audio": "[Verso 1]\nSi escondo su hueso, lo encuentra al revés,\nrasca la alfombra con patas otra vez.\nTrae sus juguetes, los pone a mis pies,\n¡me entiende muy rápido, en un, dos y tres!",
     "musicPrompt": "upbeat children's pop, happy acoustic guitar, bouncy rhythm, catchy melody, cheerful male vocal",
     "imagePrompts": [
-      { "line": "Si escondo su hueso, lo encuentra al revés,", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, buscando su hueso debajo de un sofá amarillo en una sala acogedora." },
-      { "line": "rasca la alfombra con patas otra vez.", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, rascando una alfombra azul con texturas suaves y detalladas." },
-      { "line": "Trae sus juguetes, los pone a mis pies,", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, con una pelota roja en la boca frente a los zapatos de un niño." },
-      { "line": "¡me entiende muy rápido, en un, dos y tres!", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, chocando los cinco con un niño alegre entre destellos mágicos." }
+      { "line": "Si escondo su hueso, lo encuentra al revés,", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, buscando su hueso debajo de un sofá amarillo en una sala acogedora." },
+      { "line": "rasca la alfombra con patas otra vez.", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, rascando una alfombra azul con texturas suaves y detalladas." },
+      { "line": "Trae sus juguetes, los pone a mis pies,", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, con una pelota roja en la boca frente a los zapatos de un niño." },
+      { "line": "¡me entiende muy rápido, en un, dos y tres!", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, chocando los cinco con un niño alegre entre destellos mágicos." }
     ]
   },
   { 
     "audio": "[Coro]\n¡Baila, canta, ríe sin parar!\nCon el osito vamos a soñar.\n¡Da una vuelta entera y vuelve a saltar,\nque esta fiesta nunca va a terminar!",
     "imagePrompts": [
-      { "line": "¡Baila, canta, ríe sin parar!", "prompt": "Render 3D estilo animación Pixar Disney infantil, colores ultra vibrantes, nítido, iluminación mágica de estudio. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, bailando alegremente junto a un osito de peluche bajo luces de colores." }
+      { "line": "¡Baila, canta, ríe sin parar!", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, bailando alegremente junto a un osito de peluche bajo luces de colores." }
     ]
   }
 ]`;

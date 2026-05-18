@@ -194,7 +194,7 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                   <div className="bg-kids-primary/10 border-4 border-kids-primary/30 p-4 rounded-2xl flex items-center gap-3">
                     <span className="text-3xl">💡</span>
                     <p className="text-slate-700 dark:text-slate-300 font-bold text-sm leading-relaxed">
-                      Copia estos prompts en herramientas como Midjourney, DALL-E 3, Bing Image Creator o Ideogram. Todos siguen el mismo estilo maestro de Pixar/Disney para garantizar que las imágenes de tu video tengan coherencia absoluta.
+                      Copia estos prompts en herramientas como Midjourney, DALL-E 3, Bing Image Creator o Ideogram. Todos siguen el mismo estilo maestro de 3D cartoon infantil para garantizar que las imágenes de tu video tengan coherencia absoluta.
                     </p>
                   </div>
 
