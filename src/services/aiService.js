@@ -9,36 +9,59 @@ const getGenAI = () => {
   return new GoogleGenerativeAI(apiKey.trim());
 };
 
-// Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada
+// Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada// Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada
 const getFallbackScript = (topic, duration, videoType) => {
-  const minutesMatch = duration.match(/\d+/);
-  const totalSeconds = minutesMatch ? parseInt(minutesMatch[0]) * 60 : 60;
-  const segments = Math.ceil(totalSeconds / 15); // Segmentos de 15 segundos para dar variedad natural
-
   const script = [];
 
-  // Plantillas ricas y variadas para que nunca se repita
-  const musicalVerses = [
-    `🎵 ¡Atención amigos, la aventura va a empezar! Con ${topic} nos vamos a divertir y a cantar.`,
-    `🎶 Da un paso al frente, mueve los pies, mira a ${topic} saltando a la vez.`,
-    `🎵 Bajo el sol brillante o la luna de cristal, la magia de ${topic} es algo sensacional.`,
-    `🎶 Girando, girando como un carrusel, ${topic} nos muestra un mundo de papel.`,
-    `🎵 Sube las manos, aplaude con emoción, que ${topic} te canta esta bella canción.`
-  ];
+  if (videoType === "musical") {
+    const musicalVerses = [
+      `Con gran alegría vamos a empezar,\neste nuevo juego para disfrutar.\nDa un paso al frente y ponte a girar,\nque con ${topic} te va a encantar.`,
+      `Mira los colores brillando al compás,\nsalta muy bien alto, un poquito más.\nTodos los amigos vienen por detrás,\njunto con ${topic} paz y amor tendrás.`,
+      `Bajo las estrellas o el sol de cristal,\nesta melodía suena sin igual.\nMueve la cabeza de un modo genial,\nque con ${topic} todo es especial.`,
+      `Sube ya las manos, aplaude con fe,\ngira a la derecha, uno, dos y tres.\nGuarda este recuerdo mágico otra vez,\njunto con ${topic} todo sale bien.`
+    ];
 
-  const musicalChoruses = [
-    `🎤 (Estribillo) ¡Baila, canta, ríe sin parar! Con ${topic} los sueños se hacen realidad. 🌟`,
-    `🎤 (Estribillo Pegadizo) ¡Uepa, uepa, vamos a saltar, que con ${topic} es hora de celebrar! 🎈`,
-    `🎤 (Estribillo Final) ¡Y así cantamos con el corazón, ${topic} es el rey de esta canción! 🚀`
-  ];
+    const musicalChorus = `(Coro Alegre y Llamativo) 🌟\n¡Baila, canta, ríe sin parar!\nCon ${topic} vamos a soñar.\n¡Da una vuelta entera y vuelve a saltar,\nque esta fiesta nunca va a terminar! 🎈`;
 
-  const musicalVisuals = [
-    `Escena inicial: Escenario brillante con luces de neón y confeti cayendo mientras aparece el título de ${topic}.`,
-    `Cámara rápida: Los personajes hacen una coreografía divertida, saltando de un lado a otro con una sonrisa gigante.`,
-    `Plano detalle: Instrumentos musicales mágicos tocando solos alrededor de ${topic} entre burbujas de colores.`,
-    `Escena de baile libre: Todos los animalitos y amigos se unen en un gran círculo bailando bajo una bola de disco animada.`,
-    `Gran final: Fuegos artificiales de estrellas y destellos mágicos mientras ${topic} se despide con una reverencia.`
-  ];
+    const musicalVisuals = [
+      `Escena 1: Escenario brillante con luces de neón y confeti cayendo mientras aparece el título de ${topic}.`,
+      `Coro: Coreografía grupal con los personajes saltando alegremente y saludando a la cámara entre burbujas de colores.`,
+      `Escena 2: Los animalitos e infantiles interactúan de forma divertida con elementos mágicos de ${topic}.`,
+      `Coro: Vuelve la coreografía principal con luces rítmicas destellando al compás de la música.`,
+      `Escena 3: Primer plano de los personajes tocando instrumentos mágicos animados con notas flotantes 3D.`,
+      `Coro: Todos bailando en un gran círculo bajo una bola de disco brillante en el centro del escenario.`,
+      `Escena 4: Los personajes hacen trucos divertidos y piruetas cómicas relacionadas con ${topic}.`,
+      `Coro Final: Gran fiesta de cierre con fuegos artificiales de estrellas y destellos mágicos mientras todos se despiden.`
+    ];
+
+    const order = [
+      { name: "Verso 1", isChorus: false },
+      { name: "Coro", isChorus: true },
+      { name: "Verso 2", isChorus: false },
+      { name: "Coro", isChorus: true },
+      { name: "Verso 3", isChorus: false },
+      { name: "Coro", isChorus: true },
+      { name: "Verso 4", isChorus: false },
+      { name: "Coro Final", isChorus: true }
+    ];
+
+    for (let i = 0; i < order.length; i++) {
+      const item = order[i];
+      const start = i * 15;
+      const end = (i + 1) * 15;
+      const timeStr = `${Math.floor(start / 60)}:${(start % 60).toString().padStart(2, '0')} - ${Math.floor(end / 60)}:${(end % 60).toString().padStart(2, '0')}`;
+      
+      const visual = musicalVisuals[i];
+      const audio = item.isChorus ? musicalChorus : musicalVerses[Math.floor(i / 2)];
+      script.push({ time: `${item.name} (${timeStr})`, visual, audio });
+    }
+    return script;
+  }
+
+  // Fallback para narracion e historia
+  const minutesMatch = duration.match(/\d+/);
+  const totalSeconds = minutesMatch ? parseInt(minutesMatch[0]) * 60 : 60;
+  const segments = Math.ceil(totalSeconds / 15);
 
   const narracionAudios = [
     `¡Hola pequeños investigadores! 🔍 Hoy tenemos una misión súper emocionante: descubrir los grandes secretos de ${topic}.`,
@@ -52,7 +75,7 @@ const getFallbackScript = (topic, duration, videoType) => {
     `Animación de apertura: Un libro de notas se abre y sale una lupa gigante enfocando el título de ${topic}.`,
     `Gráfico animado: Aparecen flechas y círculos de colores resaltando las partes más importantes de ${topic}.`,
     `Pantalla dividida: A un lado el personaje investigador con expresión de asombro, al otro una animación detallada de ${topic}.`,
-    `Zoom in microscópico: La cámara se acerc muchísimo para mostrar un detalle secreto de ${topic} con brillos mágicos.`,
+    `Zoom in microscópico: La cámara se acerca muchísimo para mostrar un detalle secreto de ${topic} con brillos mágicos.`,
     `Escena de cierre: El personaje investigador choca los cinco con la pantalla mientras caen insignias de explorador.`
   ];
 
@@ -80,12 +103,7 @@ const getFallbackScript = (topic, duration, videoType) => {
     let visual = "";
     let audio = "";
 
-    if (videoType === "musical") {
-      const sectionName = i === 0 ? "Estrofa 1" : i === 1 ? "Estribillo" : i === 2 ? "Estrofa 2" : i === segments - 1 ? "Estribillo Final" : `Estrofa ${i+1}`;
-      visual = musicalVisuals[i % musicalVisuals.length];
-      audio = (i === 1 || i === segments - 1) ? musicalChoruses[i % musicalChoruses.length] : musicalVerses[i % musicalVerses.length];
-      script.push({ time: `${sectionName} (${timeStr})`, visual, audio });
-    } else if (videoType === "narracion") {
+    if (videoType === "narracion") {
       visual = narracionVisuals[i % narracionVisuals.length];
       audio = narracionAudios[i % narracionAudios.length];
       script.push({ time: `Segmento ${i+1} (${timeStr})`, visual, audio });
@@ -167,18 +185,42 @@ export const generateScript = async (topic, duration = "1 minuto", videoType = "
 Tema de la canción: "${topic}".
 Duración aproximada: ${duration}.
 
-Genera la letra completa de la canción estructurada en secciones diferentes (ej. Estrofa 1, Estribillo, Estrofa 2, Puente, Estribillo Final).
-IMPORTANTE Y OBLIGATORIO: Asegúrate de NO REPETIR la misma letra ni la misma descripción visual en las diferentes secciones. Cada estrofa debe contar una parte nueva y emocionante de la historia, y cada descripción visual debe mostrar escenarios, coreografías y acciones completamente DIFERENTES.
+IMPORTANTE Y OBLIGATORIO: La estructura de la canción debe seguir estrictamente este orden exacto de 8 secciones:
+1. Verso 1
+2. Coro
+3. Verso 2
+4. Coro
+5. Verso 3
+6. Coro
+7. Verso 4
+8. Coro Final
 
-Para cada sección, proporciona:
-1. "time": El nombre de la sección y tiempo estimado (ej. "Estrofa 1 (0:00 - 0:30)").
-2. "visual": Descripción de la animación o escenas visuales alegres, dinámicas y DIFERENTES para cada parte.
-3. "audio": La letra exacta y creativa de la canción para cantar, sin repetir versos anteriores (salvo el estribillo), incluyendo indicaciones de ritmo o coros (ej. "🎵 (Ritmo alegre) ¡Salta, salta sin parar!...").
+REGLAS PARA LA LETRA ("audio"):
+- El "Coro" debe ser sumamente llamativo, pegadizo y alegre para atraer a los niños. El mismo coro se repite de forma idéntica después de cada verso.
+- Cada "Verso" (Verso 1, Verso 2, Verso 3, Verso 4) debe tener exactamente 4 líneas rimadas contando una parte nueva y divertida de la historia. Ejemplo de un verso de 4 líneas:
+Si escondo su hueso, lo encuentra al revés,
+rasca la alfombra con sus patas otra vez.
+Trae sus juguetes, los pone a mis pies,
+¡y si le hablo claro, me entiende en un tres!
+
+REGLAS PARA LA ANIMACIÓN ("visual"):
+- Cada sección debe tener una descripción visual alegre, dinámica y DIFERENTE (escenarios, coreografías, luces, acciones de los personajes).
+
+Para cada una de las 8 secciones, proporciona:
+1. "time": El nombre de la sección y tiempo estimado (ej. "Verso 1 (0:00 - 0:20)").
+2. "visual": Descripción detallada de la animación o escenas visuales para esa parte.
+3. "audio": La letra exacta para cantar (el verso de 4 líneas o el coro alegre).
 
 Devuelve estrictamente un array JSON de objetos con el formato:
 [
-  { "time": "Estrofa 1 (0:00 - 0:30)", "visual": "...", "audio": "..." },
-  { "time": "Estribillo (0:30 - 1:00)", "visual": "...", "audio": "..." }
+  { "time": "Verso 1 (0:00 - 0:20)", "visual": "...", "audio": "..." },
+  { "time": "Coro (0:20 - 0:40)", "visual": "...", "audio": "..." },
+  { "time": "Verso 2 (0:40 - 1:00)", "visual": "...", "audio": "..." },
+  { "time": "Coro (1:00 - 1:20)", "visual": "...", "audio": "..." },
+  { "time": "Verso 3 (1:20 - 1:40)", "visual": "...", "audio": "..." },
+  { "time": "Coro (1:40 - 2:00)", "visual": "...", "audio": "..." },
+  { "time": "Verso 4 (2:00 - 2:20)", "visual": "...", "audio": "..." },
+  { "time": "Coro Final (2:20 - 2:40)", "visual": "...", "audio": "..." }
 ]`;
     } else if (videoType === "narracion") {
       prompt = `Actúa como un guionista experto en documentales y videos educativos infantiles para YouTube.
