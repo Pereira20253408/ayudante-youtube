@@ -98,30 +98,49 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
             </button>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border-4 border-slate-100 dark:border-slate-700">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300">
-                  <th className="p-4 font-black border-b-4 border-slate-200 dark:border-slate-700">
-                    {videoType === 'musical' ? '🎼 Sección / Tiempo' : '⏱️ Tiempo'}
-                  </th>
-                  <th className="p-4 font-black border-b-4 border-slate-200 dark:border-slate-700">👀 Visual</th>
-                  <th className="p-4 font-black border-b-4 border-slate-200 dark:border-slate-700">
-                    {videoType === 'musical' ? '🎤 Letra / Coro' : '🎵 Audio'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayedScript.map((row, idx) => (
-                  <tr key={idx} className="border-b-4 border-slate-50 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                    <td className="p-4 font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">{row.time}</td>
-                    <td className="p-4 text-slate-700 dark:text-slate-200">{row.visual}</td>
-                    <td className="p-4 text-slate-700 dark:text-slate-300 font-medium italic whitespace-pre-line">"{row.audio}"</td>
+          {videoType === 'musical' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {displayedScript.map((row, idx) => {
+                const isChorus = row.audio?.includes('[Coro]') || row.audio?.includes('Coro');
+                const cleanAudio = row.audio?.replace(/\[.*?\]\n?/, '').trim();
+                const sectionTag = row.audio?.match(/\[(.*?)\]/)?.[1] || (isChorus ? 'Coro' : `Verso ${idx + 1}`);
+
+                return (
+                  <div key={idx} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-secondary/30 rounded-3xl p-6 shadow-md hover:border-kids-secondary transition-all flex flex-col justify-between relative overflow-hidden group">
+                    <div className={`absolute top-0 right-0 ${isChorus ? 'bg-kids-secondary' : 'bg-kids-primary'} text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm`}>
+                      {isChorus ? '🌟 ' : '🎵 '}{sectionTag}
+                    </div>
+                    <div className="pt-6">
+                      <p className="text-slate-800 dark:text-slate-100 font-black text-lg leading-relaxed whitespace-pre-line font-mono tracking-wide">
+                        {cleanAudio}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl border-4 border-slate-100 dark:border-slate-700">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300">
+                    <th className="p-4 font-black border-b-4 border-slate-200 dark:border-slate-700">⏱️ Tiempo</th>
+                    <th className="p-4 font-black border-b-4 border-slate-200 dark:border-slate-700">👀 Visual</th>
+                    <th className="p-4 font-black border-b-4 border-slate-200 dark:border-slate-700">🎵 Audio</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {displayedScript.map((row, idx) => (
+                    <tr key={idx} className="border-b-4 border-slate-50 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                      <td className="p-4 font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">{row.time}</td>
+                      <td className="p-4 text-slate-700 dark:text-slate-200">{row.visual}</td>
+                      <td className="p-4 text-slate-700 dark:text-slate-300 font-medium italic whitespace-pre-line">"{row.audio}"</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {!showAll && script.length > 10 && (
             <div className="mt-6 flex justify-center">

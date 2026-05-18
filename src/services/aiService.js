@@ -8,52 +8,35 @@ const getGenAI = () => {
   }
   return new GoogleGenerativeAI(apiKey.trim());
 };
-
-// Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada// Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada
+// Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada
 const getFallbackScript = (topic, duration, videoType) => {
   const script = [];
 
   if (videoType === "musical") {
     const musicalVerses = [
-      `Con gran alegría vamos a empezar,\neste nuevo juego para disfrutar.\nDa un paso al frente y ponte a girar,\nque con ${topic} te va a encantar.`,
-      `Mira los colores brillando al compás,\nsalta muy bien alto, un poquito más.\nTodos los amigos vienen por detrás,\njunto con ${topic} paz y amor tendrás.`,
-      `Bajo las estrellas o el sol de cristal,\nesta melodía suena sin igual.\nMueve la cabeza de un modo genial,\nque con ${topic} todo es especial.`,
-      `Sube ya las manos, aplaude con fe,\ngira a la derecha, uno, dos y tres.\nGuarda este recuerdo mágico otra vez,\njunto con ${topic} todo sale bien.`
+      `[Verso 1]\nCon gran alegría vamos a empezar,\neste nuevo juego para disfrutar.\nDa un paso al frente y ponte a girar,\nque con ${topic} te va a encantar.`,
+      `[Verso 2]\nMira los colores brillando al compás,\nsalta muy bien alto, un poquito más.\nTodos los amigos vienen por detrás,\njunto con ${topic} paz y amor tendrás.`,
+      `[Verso 3]\nBajo las estrellas o el sol de cristal,\nesta melodía suena sin igual.\nMueve la cabeza de un modo genial,\nque con ${topic} todo es especial.`,
+      `[Verso 4]\nSube ya las manos, aplaude con fe,\ngira a la derecha, uno, dos y tres.\nGuarda este recuerdo mágico otra vez,\njunto con ${topic} todo sale bien.`
     ];
 
-    const musicalChorus = `(Coro Alegre y Llamativo) 🌟\n¡Baila, canta, ríe sin parar!\nCon ${topic} vamos a soñar.\n¡Da una vuelta entera y vuelve a saltar,\nque esta fiesta nunca va a terminar! 🎈`;
-
-    const musicalVisuals = [
-      `Escena 1: Escenario brillante con luces de neón y confeti cayendo mientras aparece el título de ${topic}.`,
-      `Coro: Coreografía grupal con los personajes saltando alegremente y saludando a la cámara entre burbujas de colores.`,
-      `Escena 2: Los animalitos e infantiles interactúan de forma divertida con elementos mágicos de ${topic}.`,
-      `Coro: Vuelve la coreografía principal con luces rítmicas destellando al compás de la música.`,
-      `Escena 3: Primer plano de los personajes tocando instrumentos mágicos animados con notas flotantes 3D.`,
-      `Coro: Todos bailando en un gran círculo bajo una bola de disco brillante en el centro del escenario.`,
-      `Escena 4: Los personajes hacen trucos divertidos y piruetas cómicas relacionadas con ${topic}.`,
-      `Coro Final: Gran fiesta de cierre con fuegos artificiales de estrellas y destellos mágicos mientras todos se despiden.`
-    ];
+    const musicalChorus = `[Coro]\n🌟 ¡Baila, canta, ríe sin parar!\nCon ${topic} vamos a soñar.\n¡Da una vuelta entera y vuelve a saltar,\nque esta fiesta nunca va a terminar! 🎈`;
 
     const order = [
-      { name: "Verso 1", isChorus: false },
-      { name: "Coro", isChorus: true },
-      { name: "Verso 2", isChorus: false },
-      { name: "Coro", isChorus: true },
-      { name: "Verso 3", isChorus: false },
-      { name: "Coro", isChorus: true },
-      { name: "Verso 4", isChorus: false },
-      { name: "Coro Final", isChorus: true }
+      { isChorus: false, verseIndex: 0 },
+      { isChorus: true },
+      { isChorus: false, verseIndex: 1 },
+      { isChorus: true },
+      { isChorus: false, verseIndex: 2 },
+      { isChorus: true },
+      { isChorus: false, verseIndex: 3 },
+      { isChorus: true }
     ];
 
     for (let i = 0; i < order.length; i++) {
       const item = order[i];
-      const start = i * 15;
-      const end = (i + 1) * 15;
-      const timeStr = `${Math.floor(start / 60)}:${(start % 60).toString().padStart(2, '0')} - ${Math.floor(end / 60)}:${(end % 60).toString().padStart(2, '0')}`;
-      
-      const visual = musicalVisuals[i];
-      const audio = item.isChorus ? musicalChorus : musicalVerses[Math.floor(i / 2)];
-      script.push({ time: `${item.name} (${timeStr})`, visual, audio });
+      const audio = item.isChorus ? musicalChorus : musicalVerses[item.verseIndex];
+      script.push({ audio });
     }
     return script;
   }
@@ -76,7 +59,7 @@ const getFallbackScript = (topic, duration, videoType) => {
     `Gráfico animado: Aparecen flechas y círculos de colores resaltando las partes más importantes de ${topic}.`,
     `Pantalla dividida: A un lado el personaje investigador con expresión de asombro, al otro una animación detallada de ${topic}.`,
     `Zoom in microscópico: La cámara se acerca muchísimo para mostrar un detalle secreto de ${topic} con brillos mágicos.`,
-    `Escena de cierre: El personaje investigador choca los cinco con la pantalla mientras caen insignias de explorador.`
+    `Escena de cierre: El personaje investigador choca los cinco con la centalla mientras caen insignias de explorador.`
   ];
 
   const historiaAudios = [
@@ -185,42 +168,24 @@ export const generateScript = async (topic, duration = "1 minuto", videoType = "
 Tema de la canción: "${topic}".
 Duración aproximada: ${duration}.
 
-IMPORTANTE Y OBLIGATORIO: La estructura de la canción debe seguir estrictamente este orden exacto de 8 secciones:
-1. Verso 1
-2. Coro
-3. Verso 2
-4. Coro
-5. Verso 3
-6. Coro
-7. Verso 4
-8. Coro Final
+IMPORTANTE Y OBLIGATORIO: Genera ÚNICAMENTE la letra de la canción estructurada en 8 secciones exactas (Verso 1, Coro, Verso 2, Coro, Verso 3, Coro, Verso 4, Coro Final).
+NO generes propiedades de tiempo ("time") ni descripciones visuales ("visual").
 
 REGLAS PARA LA LETRA ("audio"):
 - El "Coro" debe ser sumamente llamativo, pegadizo y alegre para atraer a los niños. El mismo coro se repite de forma idéntica después de cada verso.
-- Cada "Verso" (Verso 1, Verso 2, Verso 3, Verso 4) debe tener exactamente 4 líneas rimadas contando una parte nueva y divertida de la historia. Ejemplo de un verso de 4 líneas:
+- Cada "Verso" (Verso 1, Verso 2, Verso 3, Verso 4) debe tener exactamente 4 líneas rimadas contando una parte nueva y divertida de la historia. Las líneas deben ser cortas y con buen ritmo para que al momento de cantar o producir la canción todo cuadre perfectamente. Ejemplo de un verso de 4 líneas cortas:
 Si escondo su hueso, lo encuentra al revés,
-rasca la alfombra con sus patas otra vez.
+rasca la alfombra con patas otra vez.
 Trae sus juguetes, los pone a mis pies,
-¡y si le hablo claro, me entiende en un tres!
+¡me entiende muy rápido, en un, dos y tres!
 
-REGLAS PARA LA ANIMACIÓN ("visual"):
-- Cada sección debe tener una descripción visual alegre, dinámica y DIFERENTE (escenarios, coreografías, luces, acciones de los personajes).
-
-Para cada una de las 8 secciones, proporciona:
-1. "time": El nombre de la sección y tiempo estimado (ej. "Verso 1 (0:00 - 0:20)").
-2. "visual": Descripción detallada de la animación o escenas visuales para esa parte.
-3. "audio": La letra exacta para cantar (el verso de 4 líneas o el coro alegre).
+Para cada una de las 8 secciones, proporciona únicamente la propiedad "audio" con la etiqueta de la sección y la letra exacta para cantar. Ejemplo: "[Verso 1]\\nSi escondo su hueso...".
 
 Devuelve estrictamente un array JSON de objetos con el formato:
 [
-  { "time": "Verso 1 (0:00 - 0:20)", "visual": "...", "audio": "..." },
-  { "time": "Coro (0:20 - 0:40)", "visual": "...", "audio": "..." },
-  { "time": "Verso 2 (0:40 - 1:00)", "visual": "...", "audio": "..." },
-  { "time": "Coro (1:00 - 1:20)", "visual": "...", "audio": "..." },
-  { "time": "Verso 3 (1:20 - 1:40)", "visual": "...", "audio": "..." },
-  { "time": "Coro (1:40 - 2:00)", "visual": "...", "audio": "..." },
-  { "time": "Verso 4 (2:00 - 2:20)", "visual": "...", "audio": "..." },
-  { "time": "Coro Final (2:20 - 2:40)", "visual": "...", "audio": "..." }
+  { "audio": "[Verso 1]\nSi escondo su hueso, lo encuentra al revés,\nrasca la alfombra con patas otra vez.\nTrae sus juguetes, los pone a mis pies,\n¡me entiende muy rápido, en un, dos y tres!" },
+  { "audio": "[Coro]\n¡Baila, canta, ríe sin parar!\nCon el osito vamos a soñar.\n¡Da una vuelta entera y vuelve a saltar,\nque esta fiesta nunca va a terminar!" },
+  { "audio": "[Verso 2]\n..." }
 ]`;
     } else if (videoType === "narracion") {
       prompt = `Actúa como un guionista experto en documentales y videos educativos infantiles para YouTube.
