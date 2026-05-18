@@ -9,45 +9,91 @@ const getGenAI = () => {
   return new GoogleGenerativeAI(apiKey.trim());
 };
 
-// Fallbacks simulados por si falla la API o no hay clave configurada
+// Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada
 const getFallbackScript = (topic, duration, videoType) => {
   const minutesMatch = duration.match(/\d+/);
   const totalSeconds = minutesMatch ? parseInt(minutesMatch[0]) * 60 : 60;
-  const segments = Math.ceil(totalSeconds / 5);
+  const segments = Math.ceil(totalSeconds / 15); // Segmentos de 15 segundos para dar variedad natural
 
   const script = [];
+
+  // Plantillas ricas y variadas para que nunca se repita
+  const musicalVerses = [
+    `🎵 ¡Atención amigos, la aventura va a empezar! Con ${topic} nos vamos a divertir y a cantar.`,
+    `🎶 Da un paso al frente, mueve los pies, mira a ${topic} saltando a la vez.`,
+    `🎵 Bajo el sol brillante o la luna de cristal, la magia de ${topic} es algo sensacional.`,
+    `🎶 Girando, girando como un carrusel, ${topic} nos muestra un mundo de papel.`,
+    `🎵 Sube las manos, aplaude con emoción, que ${topic} te canta esta bella canción.`
+  ];
+
+  const musicalChoruses = [
+    `🎤 (Estribillo) ¡Baila, canta, ríe sin parar! Con ${topic} los sueños se hacen realidad. 🌟`,
+    `🎤 (Estribillo Pegadizo) ¡Uepa, uepa, vamos a saltar, que con ${topic} es hora de celebrar! 🎈`,
+    `🎤 (Estribillo Final) ¡Y así cantamos con el corazón, ${topic} es el rey de esta canción! 🚀`
+  ];
+
+  const musicalVisuals = [
+    `Escena inicial: Escenario brillante con luces de neón y confeti cayendo mientras aparece el título de ${topic}.`,
+    `Cámara rápida: Los personajes hacen una coreografía divertida, saltando de un lado a otro con una sonrisa gigante.`,
+    `Plano detalle: Instrumentos musicales mágicos tocando solos alrededor de ${topic} entre burbujas de colores.`,
+    `Escena de baile libre: Todos los animalitos y amigos se unen en un gran círculo bailando bajo una bola de disco animada.`,
+    `Gran final: Fuegos artificiales de estrellas y destellos mágicos mientras ${topic} se despide con una reverencia.`
+  ];
+
+  const narracionAudios = [
+    `¡Hola pequeños investigadores! 🔍 Hoy tenemos una misión súper emocionante: descubrir los grandes secretos de ${topic}.`,
+    `¿Sabías qué? 💡 ${topic} tiene características únicas que sorprenden a todos los científicos del mundo. ¡Miremos de cerca!`,
+    `¡Guau! 🔬 Si observamos con nuestra lupa mágica, podemos ver cómo ${topic} funciona en su entorno natural. Es fascinante.`,
+    `Otro dato curiosísimo: a lo largo de la historia, ${topic} ha ayudado a entender muchos misterios de nuestro planeta. 🌍`,
+    `¡Excelente trabajo, equipo de exploradores! 🎒 Hoy hemos aprendido cosas increíbles sobre ${topic}. ¡Hasta la próxima aventura!`
+  ];
+
+  const narracionVisuals = [
+    `Animación de apertura: Un libro de notas se abre y sale una lupa gigante enfocando el título de ${topic}.`,
+    `Gráfico animado: Aparecen flechas y círculos de colores resaltando las partes más importantes de ${topic}.`,
+    `Pantalla dividida: A un lado el personaje investigador con expresión de asombro, al otro una animación detallada de ${topic}.`,
+    `Zoom in microscópico: La cámara se acerc muchísimo para mostrar un detalle secreto de ${topic} con brillos mágicos.`,
+    `Escena de cierre: El personaje investigador choca los cinco con la pantalla mientras caen insignias de explorador.`
+  ];
+
+  const historiaAudios = [
+    `Había una vez, en un valle lleno de árboles de algodón de azúcar, un simpático amigo llamado ${topic}... ✨`,
+    `Un día soleado, ${topic} decidió emprender un viaje misterioso para encontrar el tesoro de la montaña dorada. 🗺️`,
+    `De repente, se presentó un gran desafío. Pero ${topic}, con mucho ingenio y ayuda de sus amigos, ideó un plan brillante. 🌟`,
+    `¡Lo lograron! 🎉 Al superar el obstáculo, el cielo se llenó de auroras boreales y risas encantadoras.`,
+    `Y así, ${topic} descubrió que el verdadero tesoro siempre fue la amistad y la valentía que llevaba en su corazón. ❤️`
+  ];
+
+  const historiaVisuals = [
+    `Apertura mágica: Un polvo de hadas dorado dibuja el contorno de ${topic} sobre un prado verde y florido.`,
+    `Escena de travesía: El personaje camina alegremente por un sendero animado con mariposas que brillan a su paso.`,
+    `Escena de acción y suspenso leve: Sombras graciosas aparecen, pero el personaje usa un objeto mágico que ilumina todo el lugar.`,
+    `Clímax festivo: Una explosión de luz cálida transforma el paisaje en un festival de colores y alegría.`,
+    `Cierre de cuento: El libro mágico se cierra suavemente con un lazo de cinta roja mientras la luna sonríe en el cielo.`
+  ];
+
   for (let i = 0; i < segments; i++) {
-    const start = i * 5;
-    const end = (i + 1) * 5;
+    const start = i * 15;
+    const end = (i + 1) * 15;
     const timeStr = `${Math.floor(start / 60)}:${(start % 60).toString().padStart(2, '0')} - ${Math.floor(end / 60)}:${(end % 60).toString().padStart(2, '0')}`;
     
     let visual = "";
     let audio = "";
 
     if (videoType === "musical") {
-      visual = i === 0 
-        ? `Escena de apertura: Título musical animado '${topic}' con notas musicales brillantes y luces de escenario.` 
-        : `Escena ${i + 1}: Personajes bailando al ritmo de la música, interactuando alegremente con elementos de ${topic}.`;
-      audio = i === 0 
-        ? `(Música alegre y pegadiza) 🎵 ¡Hola amigos! ¿Están listos para cantar y bailar con ${topic}?` 
-        : `(Estribillo pegadizo) 🎶 ¡Baila, baila, gira sin parar, con ${topic} vamos a disfrutar! 🎵`;
+      const sectionName = i === 0 ? "Estrofa 1" : i === 1 ? "Estribillo" : i === 2 ? "Estrofa 2" : i === segments - 1 ? "Estribillo Final" : `Estrofa ${i+1}`;
+      visual = musicalVisuals[i % musicalVisuals.length];
+      audio = (i === 1 || i === segments - 1) ? musicalChoruses[i % musicalChoruses.length] : musicalVerses[i % musicalVerses.length];
+      script.push({ time: `${sectionName} (${timeStr})`, visual, audio });
     } else if (videoType === "narracion") {
-      visual = i === 0 
-        ? `Escena de apertura: Título estilo documental infantil '${topic}' con lupas animadas y gráficos curiosos.` 
-        : `Escena ${i + 1}: Animación explicativa con zoom y datos curiosos sobre ${topic}, mostrando detalles fascinantes.`;
-      audio = i === 1
-        ? `¡Hola pequeños exploradores! Hoy vamos a investigar a fondo y aprender cosas increíbles sobre ${topic}.`
-        : `¿Sabías este dato curioso? ${topic} es asombroso. ¡Sigamos observando con nuestra lupa mágica! 🔍`;
+      visual = narracionVisuals[i % narracionVisuals.length];
+      audio = narracionAudios[i % narracionAudios.length];
+      script.push({ time: `Segmento ${i+1} (${timeStr})`, visual, audio });
     } else {
-      visual = i === 0 
-        ? `Escena de apertura: Un libro de cuentos mágico se abre mostrando el título '${topic}' entre destellos dorados.` 
-        : `Escena ${i + 1}: El personaje vive una emocionante aventura superando un obstáculo relacionado con ${topic}.`;
-      audio = i === 0 
-        ? `Había una vez, en un mundo lleno de magia y color, una gran aventura llamada ${topic}...` 
-        : `Y así, con mucho valor y amistad, nuestro héroe descubrió el secreto mágico de ${topic}. ✨`;
+      visual = historiaVisuals[i % historiaVisuals.length];
+      audio = historiaAudios[i % historiaAudios.length];
+      script.push({ time: `Escena ${i+1} (${timeStr})`, visual, audio });
     }
-    
-    script.push({ time: videoType === 'musical' ? `Sección ${i+1} (${timeStr})` : timeStr, visual, audio });
   }
   return script;
 };
@@ -121,11 +167,13 @@ export const generateScript = async (topic, duration = "1 minuto", videoType = "
 Tema de la canción: "${topic}".
 Duración aproximada: ${duration}.
 
-Genera la letra completa de la canción estructurada en secciones (ej. Estrofa 1, Estribillo, Estrofa 2, Puente, Estribillo Final).
+Genera la letra completa de la canción estructurada en secciones diferentes (ej. Estrofa 1, Estribillo, Estrofa 2, Puente, Estribillo Final).
+IMPORTANTE Y OBLIGATORIO: Asegúrate de NO REPETIR la misma letra ni la misma descripción visual en las diferentes secciones. Cada estrofa debe contar una parte nueva y emocionante de la historia, y cada descripción visual debe mostrar escenarios, coreografías y acciones completamente DIFERENTES.
+
 Para cada sección, proporciona:
 1. "time": El nombre de la sección y tiempo estimado (ej. "Estrofa 1 (0:00 - 0:30)").
-2. "visual": Descripción de la animación o escenas visuales alegres y dinámicas que acompañan esta parte.
-3. "audio": La letra exacta de la canción para cantar, incluyendo indicaciones de ritmo o coros (ej. "🎵 (Ritmo alegre) ¡Salta, salta sin parar!...").
+2. "visual": Descripción de la animación o escenas visuales alegres, dinámicas y DIFERENTES para cada parte.
+3. "audio": La letra exacta y creativa de la canción para cantar, sin repetir versos anteriores (salvo el estribillo), incluyendo indicaciones de ritmo o coros (ej. "🎵 (Ritmo alegre) ¡Salta, salta sin parar!...").
 
 Devuelve estrictamente un array JSON de objetos con el formato:
 [
@@ -138,10 +186,12 @@ Tema del video: "${topic}".
 Duración aproximada: ${duration}.
 
 Genera un guion educativo, entretenido y lleno de datos curiosos, dividido en segmentos de tiempo.
+IMPORTANTE Y OBLIGATORIO: Asegúrate de NO REPETIR la misma narración ni la misma descripción visual en los diferentes segmentos. Cada segmento debe explicar un dato curioso o concepto NUEVO, con animaciones, gráficos y situaciones DIFERENTES.
+
 Para cada segmento, proporciona:
 1. "time": Intervalo de tiempo (ej. "0:00 - 0:45").
-2. "visual": Descripción de gráficos, animaciones explicativas, lupas o personajes investigando.
-3. "audio": La narración entusiasta y clara, explicando conceptos o datos curiosos sobre el tema.
+2. "visual": Descripción de gráficos, animaciones explicativas, lupas o personajes investigando (diferente en cada segmento).
+3. "audio": La narración entusiasta y clara, explicando conceptos o datos curiosos NUEVOS sobre el tema sin repetir lo anterior.
 
 Devuelve estrictamente un array JSON de objetos con el formato:
 [
@@ -152,11 +202,13 @@ Devuelve estrictamente un array JSON de objetos con el formato:
 Tema del cuento: "${topic}".
 Duración aproximada: ${duration}.
 
-Genera un guion de cuento mágico y emocionante, dividido en segmentos de tiempo.
+Genera un guion de cuento mágico y emocionante, dividido en escenas o segmentos de tiempo.
+IMPORTANTE Y OBLIGATORIO: Asegúrate de NO REPETIR los mismos diálogos ni la misma descripción visual en las diferentes escenas. La historia debe avanzar de forma fluida con un inicio, desarrollo, clímax y desenlace, mostrando escenarios, retos y acciones mágicas DIFERENTES en cada parte.
+
 Para cada segmento, proporciona:
 1. "time": Intervalo de tiempo (ej. "0:00 - 1:00").
-2. "visual": Descripción de las escenas animadas, expresiones de los personajes y acciones mágicas.
-3. "audio": La narración del cuento y diálogos de los personajes con tono cálido y atrapante.
+2. "visual": Descripción de las escenas animadas, expresiones de los personajes y acciones mágicas (diferente en cada escena).
+3. "audio": La narración del cuento y diálogos de los personajes con tono cálido y atrapante, haciendo avanzar la historia sin repetir textos.
 
 Devuelve estrictamente un array JSON de objetos con el formato:
 [
