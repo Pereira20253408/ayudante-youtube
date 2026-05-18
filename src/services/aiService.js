@@ -409,8 +409,9 @@ Trae sus juguetes, los pone a mis pies,
 
 REGLAS PARA EL PROMPT MUSICAL ("musicPrompt"):
 - En el PRIMER objeto del array (el del Verso 1), DEBES incluir una propiedad "musicPrompt".
-- Debe contener un prompt de estilo musical en INGLÉS (ej. "upbeat pop, children's music, happy acoustic guitar, catchy melody").
-- Debe ser ideal para herramientas como Suno AI o Udio, describiendo el género, ritmo e instrumentos que encajen con la letra generada.
+- REGLA DE TONO Y VARIEDAD: El estilo musical SIEMPRE debe ser alegre, divertido, positivo y con buen ritmo para encantar a los niños (usa términos obligatorios en inglés como "happy, upbeat, fun, joyful, cheerful, catchy melody").
+- CAMBIO DINÁMICO SEGÚN EL TEMA: Aunque siempre sea alegre y divertido, el género musical específico, el ritmo y los instrumentos DEBEN CAMBIAR dinámicamente basándose en el tema y la letra de la canción. Por ejemplo, si el tema es de piratas: "happy sea shanty pop, upbeat accordion, fun acoustic guitar, cheerful kid chorus"; si es del espacio: "fun synth pop, upbeat electronic beats, happy cosmic melody, cheerful vocals"; si es de dinosaurios: "energetic jungle pop, happy tribal percussion, fun bouncy bass, joyful kid songs".
+- Debe ser ideal para herramientas como Suno AI o Udio.
 - OBLIGATORIO: DEBE ESTAR EN INGLÉS. Los demás objetos no necesitan esta propiedad.
 
 REGLAS PARA LOS PROMPTS DE IMÁGENES ("imagePrompts"):
