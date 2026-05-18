@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Wand2, Tags, Image as ImageIcon, Sparkles, Loader2, Clock, Moon, Sun, History, Film, Trash2, RotateCcw, Star, Check } from 'lucide-react';
+import { LayoutDashboard, Wand2, Tags, Image as ImageIcon, Sparkles, Loader2, Clock, Moon, Sun, History, Film, Trash2, RotateCcw, Star, Check, Key } from 'lucide-react';
 import ScriptGenerator from './components/ScriptGenerator';
 import MetadataStudio from './components/MetadataStudio';
 import ThumbnailIdeas from './components/ThumbnailIdeas';
@@ -25,6 +25,10 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [chosenCopied, setChosenCopied] = useState(false);
 
+  // Gemini API Key state
+  const [apiKey, setApiKey] = useState('');
+  const [showApiModal, setShowApiModal] = useState(false);
+
   // Global results state
   const [script, setScript] = useState(null);
   const [metadata, setMetadata] = useState(null);
@@ -41,6 +45,7 @@ function App() {
     const savedScript = localStorage.getItem('ckc_script');
     const savedMetadata = localStorage.getItem('ckc_metadata');
     const savedThumbnail = localStorage.getItem('ckc_thumbnail');
+    const savedApiKey = localStorage.getItem('ckc_gemini_api_key');
 
     if (savedTopic) setTopic(savedTopic);
     if (savedDuration) setDuration(savedDuration);
@@ -51,6 +56,7 @@ function App() {
     if (savedScript) setScript(JSON.parse(savedScript));
     if (savedMetadata) setMetadata(JSON.parse(savedMetadata));
     if (savedThumbnail) setThumbnailIdea(JSON.parse(savedThumbnail));
+    if (savedApiKey) setApiKey(savedApiKey);
 
     setIsLoaded(true);
   }, []);
@@ -108,7 +114,12 @@ function App() {
       setHistory(prev => [newItem, ...prev]);
     } catch (error) {
       console.error(error);
-      alert('Error generando contenido global.');
+      if (error.message === 'API_KEY_MISSING') {
+        alert('🔑 No has configurado tu API Key de Google Gemini. Por favor haz clic en el botón "🔑 Configurar API Key" en el menú lateral para ingresar tu clave y usar la IA real.');
+        setShowApiModal(true);
+      } else {
+        alert('Error conectando con Gemini AI. Revisa tu conexión o tu API Key.');
+      }
     } finally {
       setIsLoadingAll(false);
     }
@@ -129,7 +140,54 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-kids-bg dark:bg-slate-900 flex flex-col md:flex-row transition-colors">
+    <div className="min-h-screen bg-kids-bg dark:bg-slate-900 flex flex-col md:flex-row transition-colors relative">
+      {/* Modal de Configuración de API Key */}
+      {showApiModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="card-kids bg-white dark:bg-slate-800 max-w-lg w-full space-y-6 border-4 border-kids-secondary shadow-2xl relative">
+            <h3 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
+              <Key className="text-kids-secondary" />
+              Configurar Google Gemini API Key
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 font-bold text-sm leading-relaxed">
+              Para generar letras de canciones, guiones y metadatos con Inteligencia Artificial real de Google Gemini, ingresa tu clave de API. 
+              Esta clave se guarda de forma 100% segura y cifrada en tu propio navegador (localStorage) y nunca se sube a GitHub ni a ningún servidor externo.
+            </p>
+            <div>
+              <label className="block text-xs font-black text-slate-400 uppercase mb-2">Tu API Key (AI Studio)</label>
+              <input 
+                type="password" 
+                placeholder="AIzaSy..." 
+                className="input-kids py-3 text-sm font-mono"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+              />
+              <p className="text-xs text-slate-400 font-bold mt-2">
+                ¿No tienes una? Consíguela gratis en <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" className="text-kids-secondary underline hover:text-blue-500 font-black">Google AI Studio</a>.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3 pt-4 border-t-2 border-slate-100 dark:border-slate-700">
+              <button 
+                onClick={() => setShowApiModal(false)}
+                className="px-6 py-3 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+              >
+                Cerrar
+              </button>
+              <button 
+                onClick={() => {
+                  localStorage.setItem('ckc_gemini_api_key', apiKey.trim());
+                  alert('¡API Key guardada correctamente en tu navegador!');
+                  setShowApiModal(false);
+                }}
+                className="btn-kids btn-secondary text-sm py-3 px-6"
+              >
+                Guardar API Key
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar */}
       <aside className="w-full md:w-72 bg-white dark:bg-slate-900 shadow-kids p-6 flex flex-col z-10 border-r-4 border-slate-100 dark:border-slate-800 transition-colors">
         <div className="flex flex-col items-center gap-3 mb-10 mt-4 text-center">
@@ -149,7 +207,7 @@ function App() {
             }`}
           >
             <LayoutDashboard size={24} />
-            Guiones
+            {videoType === 'musical' ? 'Letra Musical' : 'Guiones'}
           </button>
           
           <button 
@@ -189,7 +247,18 @@ function App() {
           </button>
         </nav>
 
-        <div className="mt-auto pt-6 border-t-4 border-slate-50 dark:border-slate-800">
+        <div className="mt-auto pt-6 border-t-4 border-slate-50 dark:border-slate-800 space-y-4">
+          <button 
+            onClick={() => setShowApiModal(true)}
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 font-bold transition-all hover:scale-105 border-2 border-amber-200 dark:border-amber-800/50"
+          >
+            <span className="flex items-center gap-2">
+              <Key size={20} className="text-amber-500" />
+              API Key Gemini
+            </span>
+            <span className={`w-3 h-3 rounded-full ${apiKey ? 'bg-green-500 shadow-lg shadow-green-500/50' : 'bg-red-500 animate-pulse'}`} title={apiKey ? 'Configurada' : 'No configurada'} />
+          </button>
+
           <button 
             onClick={() => setDarkMode(!darkMode)}
             className="w-full flex items-center justify-between p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold transition-all hover:scale-105"
