@@ -361,7 +361,7 @@ function App() {
                       <button
                         key={idx}
                         type="button"
-                        onClick={() => setTopic(sug.replace(/ .*/, ''))}
+                        onClick={() => setTopic(sug.replace(/ [^ ]+$/, ''))}
                         className="bg-slate-100 dark:bg-slate-700 hover:bg-kids-secondary hover:text-white dark:hover:bg-kids-secondary text-slate-600 dark:text-slate-300 text-xs font-bold px-3 py-2 rounded-xl transition-all"
                       >
                         {sug}

@@ -31,7 +31,7 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
 
   const copyToClipboard = () => {
     if (!script) return;
-    const text = script.map(row => `${row.time} | ${row.visual} | ${row.audio}`).join('\n');
+    const text = script.map(row => row.audio).join('\n\n');
     navigator.clipboard.writeText(`${videoType === 'musical' ? 'Letra de Canción' : 'Guion'}: ${topic}\n\n${text}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
