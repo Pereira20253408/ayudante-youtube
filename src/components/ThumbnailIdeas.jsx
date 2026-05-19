@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Image as ImageIcon, Loader2, Lightbulb, Type, Copy, Check } from 'lucide-react';
 import { generateThumbnailIdeas } from '../services/aiService';
 
 export default function ThumbnailIdeas({ topic, videoType, idea, setIdea, isLoading: isParentLoading }) {
   const [isLocalLoading, setIsLocalLoading] = useState(false);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const isLoading = isParentLoading || isLocalLoading;
+
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [idea?.visualPrompt]);
 
   const handleGenerate = async (e) => {
     if (e) e.preventDefault();
@@ -89,7 +94,7 @@ export default function ThumbnailIdeas({ topic, videoType, idea, setIdea, isLoad
             </p>
           </div>
 
-          {/* Texto Sugerido */}
+          {/* Texto Sugerido / Miniatura Generada */}
           <div className="card-kids flex flex-col bg-gradient-to-br from-yellow-50 to-white border-kids-accent/30">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-kids-accent text-slate-800 p-3 rounded-2xl shadow-kids-button">
@@ -99,13 +104,36 @@ export default function ThumbnailIdeas({ topic, videoType, idea, setIdea, isLoad
             </div>
             
             <div className="flex flex-col gap-4 flex-1 justify-center">
-              <div className="bg-slate-800 p-8 rounded-3xl text-center transform -rotate-2 shadow-xl border-4 border-slate-900">
-                <h4 className="text-3xl font-black text-white" style={{ textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 4px 0 #FF4B4B' }}>
-                  {idea.suggestedText.toUpperCase()}
-                </h4>
+              <div className="relative aspect-video w-full rounded-3xl overflow-hidden shadow-xl border-4 border-slate-900 dark:border-slate-700 bg-slate-950 flex items-center justify-center group">
+                {/* Loader / Skeleton */}
+                {!imageLoaded && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800 text-white gap-3 z-10">
+                    <Loader2 className="animate-spin text-kids-accent" size={32} />
+                    <span className="text-sm font-bold text-slate-300">Generando miniatura con IA...</span>
+                  </div>
+                )}
+                
+                {/* Image */}
+                <img 
+                  src={`https://image.pollinations.ai/prompt/${encodeURIComponent(idea.visualPrompt)}?width=1280&height=720&nologo=true`}
+                  alt="Miniatura de YouTube Generada"
+                  className={`w-full h-full object-cover transition-all duration-700 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+                  onLoad={() => setImageLoaded(true)}
+                />
+
+                {/* Overlay Text (Only visible when loaded) */}
+                {imageLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center p-4 bg-gradient-to-t from-black/50 via-transparent to-transparent">
+                    <div className="transform -rotate-2 bg-yellow-400 border-4 border-slate-900 px-6 py-3 rounded-2xl shadow-2xl max-w-[90%] text-center">
+                      <h4 className="text-2xl md:text-3xl font-black text-slate-900 tracking-wider uppercase">
+                        {idea.suggestedText.toUpperCase()}
+                      </h4>
+                    </div>
+                  </div>
+                )}
               </div>
-              <p className="text-center font-bold text-slate-500 mt-4">
-                Usa fuente grande, bordes gruesos y colores contrastantes.
+              <p className="text-center font-bold text-slate-500 mt-2 text-xs">
+                Diseño 16:9 generado por IA. Texto sugerido: <span className="text-kids-accent font-black">"{idea.suggestedText}"</span>
               </p>
             </div>
           </div>

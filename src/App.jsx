@@ -3,9 +3,9 @@ import { LayoutDashboard, Wand2, Tags, Image as ImageIcon, Sparkles, Loader2, Cl
 import ScriptGenerator from './components/ScriptGenerator';
 import MetadataStudio from './components/MetadataStudio';
 import ThumbnailIdeas from './components/ThumbnailIdeas';
-import { generateScript, generateMetadata, generateThumbnailIdeas } from './services/aiService';
+import { generateScript, generateMetadata, generateThumbnailIdeas, generateRecommendedTopics } from './services/aiService';
 
-const SUGGESTED_TOPICS = [
+const DEFAULT_SUGGESTED_TOPICS = [
   "Un dinosaurio que aprende a cepillarse los dientes 🦖",
   "Aventura espacial explorando los planetas 🚀",
   "Canción mágica para aprender los colores 🎨",
@@ -24,6 +24,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [chosenCopied, setChosenCopied] = useState(false);
+  const [suggestedTopics, setSuggestedTopics] = useState(DEFAULT_SUGGESTED_TOPICS);
 
   // Gemini API Key state
   const [apiKey, setApiKey] = useState('');
@@ -46,6 +47,7 @@ function App() {
     const savedMetadata = localStorage.getItem('ckc_metadata');
     const savedThumbnail = localStorage.getItem('ckc_thumbnail');
     const savedApiKey = localStorage.getItem('ckc_gemini_api_key');
+    const savedSuggestedTopics = localStorage.getItem('ckc_suggested_topics');
 
     if (savedTopic) setTopic(savedTopic);
     if (savedDuration) setDuration(savedDuration);
@@ -57,9 +59,40 @@ function App() {
     if (savedMetadata) setMetadata(JSON.parse(savedMetadata));
     if (savedThumbnail) setThumbnailIdea(JSON.parse(savedThumbnail));
     if (savedApiKey) setApiKey(savedApiKey);
+    if (savedSuggestedTopics) setSuggestedTopics(JSON.parse(savedSuggestedTopics));
 
     setIsLoaded(true);
   }, []);
+
+  const handleSelectSuggestedTopic = async (sug) => {
+    const cleanTopic = sug.replace(/ [^ ]+$/, '');
+    setTopic(cleanTopic);
+    
+    // Quitar el tema inmediatamente de la lista
+    const updated = suggestedTopics.filter(t => t !== sug);
+    setSuggestedTopics(updated);
+    
+    try {
+      // Intentar traer una nueva sugerencia excluyendo las actuales
+      const newTopics = await generateRecommendedTopics(1, [...updated, sug]);
+      if (newTopics && newTopics.length > 0) {
+        setSuggestedTopics([...updated, newTopics[0]]);
+      }
+    } catch (err) {
+      console.warn("No se pudo obtener recomendación de Gemini, usando fallback local:", err);
+      const fallbackList = [
+        "El pirata bueno que regalaba juguetes en su isla 🏴‍☠️",
+        "La abejita que perdió su colmena 🐝",
+        "El carro de bomberos que le tenía miedo al agua 🚒",
+        "La nube triste que quería llover caramelos 🌧️",
+        "La carrera de caracoles más rápida del mundo 🐌"
+      ];
+      const available = fallbackList.filter(t => !updated.includes(t) && t !== sug);
+      if (available.length > 0) {
+        setSuggestedTopics([...updated, available[0]]);
+      }
+    }
+  };
 
   // Guardar en localStorage cuando cambien los estados (después de cargar)
   useEffect(() => {
@@ -70,10 +103,11 @@ function App() {
     localStorage.setItem('ckc_chosenTopic', chosenTopic);
     localStorage.setItem('ckc_darkMode', darkMode);
     localStorage.setItem('ckc_history', JSON.stringify(history));
+    localStorage.setItem('ckc_suggested_topics', JSON.stringify(suggestedTopics));
     if (script) localStorage.setItem('ckc_script', JSON.stringify(script));
     if (metadata) localStorage.setItem('ckc_metadata', JSON.stringify(metadata));
     if (thumbnailIdea) localStorage.setItem('ckc_thumbnail', JSON.stringify(thumbnailIdea));
-  }, [isLoaded, topic, duration, videoType, chosenTopic, darkMode, history, script, metadata, thumbnailIdea]);
+  }, [isLoaded, topic, duration, videoType, chosenTopic, darkMode, history, script, metadata, thumbnailIdea, suggestedTopics]);
 
   useEffect(() => {
     if (darkMode) {
@@ -357,11 +391,11 @@ function App() {
                 <div className="flex-1">
                   <span className="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">💡 Temas Recomendados (Haz clic para usar)</span>
                   <div className="flex flex-wrap gap-2">
-                    {SUGGESTED_TOPICS.map((sug, idx) => (
+                    {suggestedTopics.map((sug, idx) => (
                       <button
                         key={idx}
                         type="button"
-                        onClick={() => setTopic(sug.replace(/ [^ ]+$/, ''))}
+                        onClick={() => handleSelectSuggestedTopic(sug)}
                         className="bg-slate-100 dark:bg-slate-700 hover:bg-kids-secondary hover:text-white dark:hover:bg-kids-secondary text-slate-600 dark:text-slate-300 text-xs font-bold px-3 py-2 rounded-xl transition-all"
                       >
                         {sug}
@@ -378,6 +412,12 @@ function App() {
                       setChosenTopic(topic);
                       setChosenCopied(true);
                       setTimeout(() => setChosenCopied(false), 2000);
+
+                      // Si el tema actual ingresado coincide con alguno de la lista (ignorando emoji), removerlo y cargar otro
+                      const matchingSug = suggestedTopics.find(t => t.replace(/ [^ ]+$/, '') === topic.trim());
+                      if (matchingSug) {
+                        handleSelectSuggestedTopic(matchingSug);
+                      }
                     }}
                     disabled={!topic.trim()}
                     className="btn-kids btn-accent text-sm py-2 px-4 shadow-kids-button flex items-center gap-2 whitespace-nowrap"

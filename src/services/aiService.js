@@ -572,3 +572,59 @@ Devuelve estrictamente un objeto JSON con el formato:
     return getFallbackThumbnail(topic, videoType);
   }
 };
+
+export const generateRecommendedTopics = async (count = 1, excludeTopics = []) => {
+  try {
+    const genAI = getGenAI();
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const prompt = `Actúa como un director creativo experto en canales de YouTube infantiles.
+Genera un array JSON con exactamente ${count} ideas de temas creativos, divertidos y llamativos para videos infantiles (cuentos, canciones o videos educativos).
+Cada tema debe incluir un emoji infantil y coherente al final.
+Ejemplos de formato:
+"Un dinosaurio que aprende a cepillarse los dientes 🦖"
+"Aventura espacial explorando los planetas 🚀"
+"La abejita que perdió su colmena 🐝"
+
+Temas que debes EXCLUIR (no los repitas bajo ninguna circunstancia): ${JSON.stringify(excludeTopics)}
+
+Devuelve estrictamente un array JSON de strings con las nuevas ideas de temas:
+[
+  "Tema 1...",
+  "Tema 2..."
+]`;
+
+    const result = await model.generateContent(prompt);
+    let text = result.response.text();
+    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(text);
+  } catch (error) {
+    console.warn("Error generando temas recomendados, usando pool de fallbacks:", error);
+    const fallbackPool = [
+      "La hormiga gigante que quería cantar ópera 🐜",
+      "Un día de compras en el supermercado de juguetes 🛒",
+      "El carro de bomberos que le tenía miedo al agua 🚒",
+      "Aventura en la selva buscando al mono dorado 🐒",
+      "El robot bailarín que se quedó sin batería 🤖",
+      "La nube triste que quería llover caramelos 🌧️",
+      "Una escuela mágica bajo el agua para pecesitos 🐟",
+      "El sol que quería dormir un ratito más ☀️",
+      "La carrera de caracoles más rápida del mundo 🐌",
+      "Un viaje al centro de la tierra con excavadoras 🚜",
+      "El koala que quería ser chef de cocina 🐨",
+      "Un cohete espacial impulsado por globos de fiesta 🎈",
+      "El pirata bueno que regalaba juguetes en su isla 🏴‍☠️",
+      "Un tren que viaja por el arcoíris mágico 🌈",
+      "La jirafa que usaba bufandas gigantes de colores 🦒"
+    ];
+    // Filtrar los excluidos
+    const filtered = fallbackPool.filter(t => !excludeTopics.includes(t));
+    // Mezclar aleatoriamente
+    const shuffled = filtered.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  }
+};
+
