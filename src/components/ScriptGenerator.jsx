@@ -18,13 +18,54 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
     if (!topic.trim() || !script) return;
     setIsGeneratingImages(true);
     try {
-      const res = await generateImagePromptsForScript(topic, script);
-      const updatedScript = script.map((item, idx) => {
-        return {
-          ...item,
-          imagePrompts: res[idx]?.imagePrompts || []
-        };
+      // 1. Filtrar las secciones únicas para optimizar la cuota de la API y evitar duplicar el coro
+      const uniqueSections = [];
+      let chorusSeen = false;
+      script.forEach((item) => {
+        const audioLower = item.audio?.toLowerCase() || '';
+        const isChorus = audioLower.includes('[coro]') || audioLower.includes('coro');
+        if (isChorus) {
+          if (!chorusSeen) {
+            uniqueSections.push({ ...item, isChorus: true });
+            chorusSeen = true;
+          }
+        } else {
+          uniqueSections.push({ ...item, isChorus: false });
+        }
       });
+
+      // 2. Generar prompts para estas secciones únicas
+      const res = await generateImagePromptsForScript(topic, uniqueSections);
+      
+      // 3. Mapear las respuestas del JSON a las secciones únicas
+      const uniqueWithPrompts = uniqueSections.map((item, idx) => ({
+        ...item,
+        imagePrompts: res[idx]?.imagePrompts || []
+      }));
+
+      const coroItem = uniqueWithPrompts.find(item => item.isChorus);
+      const versoItems = uniqueWithPrompts.filter(item => !item.isChorus);
+      
+      // 4. Mapear de vuelta al script original completo (8 secciones)
+      let versoIdx = 0;
+      const updatedScript = script.map((item) => {
+        const audioLower = item.audio?.toLowerCase() || '';
+        const isChorus = audioLower.includes('[coro]') || audioLower.includes('coro');
+        if (isChorus) {
+          return {
+            ...item,
+            imagePrompts: coroItem?.imagePrompts || []
+          };
+        } else {
+          const vPrompts = versoItems[versoIdx]?.imagePrompts || [];
+          versoIdx++;
+          return {
+            ...item,
+            imagePrompts: vPrompts
+          };
+        }
+      });
+
       setScript(updatedScript);
     } catch (error) {
       console.error(error);
