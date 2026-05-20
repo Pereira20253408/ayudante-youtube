@@ -102,10 +102,7 @@ Devuelve estrictamente un array JSON de strings con las nuevas ideas de temas:
 };
 
 export const generateImagePromptsForScript = async (topic, scriptData) => {
-  const apiKey = localStorage.getItem('ckc_gemini_api_key') || import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) throw new Error('API_KEY_MISSING');
-  const { GoogleGenerativeAI } = await import('@google/generative-ai');
-  const genAI = new GoogleGenerativeAI(apiKey.trim());
+  const genAI = getGenAI();
   const model = genAI.getGenerativeModel({ model: getGeminiModelName(), generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
   
   const scriptText = scriptData.map(s => s.audio).join('\\n');
@@ -129,10 +126,7 @@ Reglas:
 };
 
 export const generateMusicPromptForScript = async (topic, scriptData) => {
-  const apiKey = localStorage.getItem('ckc_gemini_api_key') || import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) throw new Error('API_KEY_MISSING');
-  const { GoogleGenerativeAI } = await import('@google/generative-ai');
-  const genAI = new GoogleGenerativeAI(apiKey.trim());
+  const genAI = getGenAI();
   const model = genAI.getGenerativeModel({ model: getGeminiModelName(), generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
   
   const prompt = \`Genera un prompt de estilo musical en inglés para una canción infantil muy alegre, pegadiza y bailable sobre "\${topic}".
@@ -148,10 +142,7 @@ Devuelve un JSON con formato: { "musicPrompt": "..." }\`;
 
 export const generateAllContent = async (topic, duration = "1 minuto", videoType = "historia") => {
   try {
-    const apiKey = localStorage.getItem('ckc_gemini_api_key') || import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey) throw new Error('API_KEY_MISSING');
-    const { GoogleGenerativeAI } = await import('@google/generative-ai');
-    const genAI = new GoogleGenerativeAI(apiKey.trim());
+    const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ model: getGeminiModelName(), generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
 
     const prompt = \`Actúa como un equipo experto de producción de YouTube (Guionista, SEO y Director de Arte).

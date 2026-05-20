@@ -30,7 +30,7 @@ function App() {
   const [apiKey, setApiKey] = useState('');
   const [showApiModal, setShowApiModal] = useState(false);
   const [fallbackWarning, setFallbackWarning] = useState(null);
-  const [geminiModel, setGeminiModel] = useState('gemini-1.5-flash');
+  const [geminiModel, setGeminiModel] = useState('gemini-2.5-flash');
 
   // Global results state
   const [script, setScript] = useState(null);
@@ -245,13 +245,11 @@ function App() {
                   onChange={(e) => setGeminiModel(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-2xl p-3 font-bold text-slate-800 dark:text-white focus:outline-none focus:border-kids-secondary transition-all"
                 >
-                  <option value="gemini-1.5-flash">Gemini 1.5 Flash (Gratuito, 1500 consultas/día)</option>
-                  <option value="gemini-2.5-flash">Gemini 2.5 Flash (Gratuito, 20 consultas/día)</option>
+                  <option value="gemini-2.5-flash">Gemini 2.5 Flash (Gratuito, 1500 consultas/día)</option>
+                  <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (Rápido, 1500 consultas/día)</option>
                 </select>
-                <p className="text-[11px] text-slate-400 font-bold mt-1.5 leading-relaxed">
-                  {geminiModel === 'gemini-1.5-flash' 
-                    ? "💡 Recomendado para cuentas gratuitas: ofrece una cuota generosa de hasta 1500 peticiones por día." 
-                    : "⚠️ Límite estricto de 20 consultas gratis al día por cuenta. Recomendado solo si tienes facturación vinculada."}
+                <p className="text-[11px] text-kids-secondary font-bold mt-1.5 leading-relaxed">
+                  💡 Nota: Google retiró los modelos anteriores 1.5. Los modelos 2.5 Flash ofrecen 1500 consultas diarias totalmente gratis en tu API Key.
                 </p>
               </div>
             </div>
