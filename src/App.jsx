@@ -3,7 +3,7 @@ import { LayoutDashboard, Wand2, Tags, Image as ImageIcon, Sparkles, Loader2, Cl
 import ScriptGenerator from './components/ScriptGenerator';
 import MetadataStudio from './components/MetadataStudio';
 import ThumbnailIdeas from './components/ThumbnailIdeas';
-import { generateScript, generateMetadata, generateThumbnailIdeas, generateRecommendedTopics } from './services/aiService';
+import { generateScript, generateMetadata, generateThumbnailIdeas, generateRecommendedTopics, getFallbackScript, getFallbackMetadata, getFallbackThumbnail, generateAllContent } from './services/aiService';
 
 const DEFAULT_SUGGESTED_TOPICS = [
   "Un dinosaurio que aprende a cepillarse los dientes 🦖",
@@ -29,6 +29,7 @@ function App() {
   // Gemini API Key state
   const [apiKey, setApiKey] = useState('');
   const [showApiModal, setShowApiModal] = useState(false);
+  const [fallbackWarning, setFallbackWarning] = useState(null);
 
   // Global results state
   const [script, setScript] = useState(null);
@@ -122,17 +123,14 @@ function App() {
     if (!topic.trim()) return;
 
     setIsLoadingAll(true);
+    setFallbackWarning(null);
     try {
-      // Parallel generation for better speed
-      const [scriptRes, metadataRes, thumbnailRes] = await Promise.all([
-        generateScript(topic, duration, videoType),
-        generateMetadata(topic, videoType),
-        generateThumbnailIdeas(topic, videoType)
-      ]);
+      // Llamada única unificada para optimizar cuota y evitar límites de tasa (429)
+      const res = await generateAllContent(topic, duration, videoType);
       
-      setScript(scriptRes);
-      setMetadata(metadataRes);
-      setThumbnailIdea(thumbnailRes);
+      setScript(res.script);
+      setMetadata(res.metadata);
+      setThumbnailIdea(res.thumbnail);
 
       // Guardar en historial
       const newItem = {
@@ -141,9 +139,9 @@ function App() {
         duration,
         videoType,
         date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        script: scriptRes,
-        metadata: metadataRes,
-        thumbnailIdea: thumbnailRes
+        script: res.script,
+        metadata: res.metadata,
+        thumbnailIdea: res.thumbnail
       };
       setHistory(prev => [newItem, ...prev]);
     } catch (error) {
@@ -152,7 +150,29 @@ function App() {
         alert('🔑 No has configurado tu API Key de Google Gemini. Por favor haz clic en el botón "🔑 Configurar API Key" en el menú lateral para ingresar tu clave y usar la IA real.');
         setShowApiModal(true);
       } else {
-        alert('Error conectando con Gemini AI. Revisa tu conexión o tu API Key.');
+        const errorMsg = error.message || String(error);
+        setFallbackWarning(errorMsg);
+        
+        const scriptFallback = getFallbackScript(topic, duration, videoType);
+        const metadataFallback = getFallbackMetadata(topic, videoType);
+        const thumbnailFallback = getFallbackThumbnail(topic, videoType);
+        
+        setScript(scriptFallback);
+        setMetadata(metadataFallback);
+        setThumbnailIdea(thumbnailFallback);
+        
+        const newItem = {
+          id: Date.now(),
+          topic,
+          duration,
+          videoType,
+          date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          script: scriptFallback,
+          metadata: metadataFallback,
+          thumbnailIdea: thumbnailFallback,
+          isFallback: true
+        };
+        setHistory(prev => [newItem, ...prev]);
       }
     } finally {
       setIsLoadingAll(false);
@@ -166,11 +186,24 @@ function App() {
     setScript(item.script);
     setMetadata(item.metadata);
     setThumbnailIdea(item.thumbnailIdea);
+    setFallbackWarning(item.isFallback ? "Este elemento fue recuperado del historial cargado con datos de prueba (fallback)." : null);
     setActiveTab('script');
   };
 
   const handleDeleteHistoryItem = (id) => {
     setHistory(prev => prev.filter(item => item.id !== id));
+  };
+
+  const getFriendlyErrorMessage = (errorMsg) => {
+    if (!errorMsg) return "";
+    const lower = errorMsg.toLowerCase();
+    if (lower.includes("429") || lower.includes("quota") || lower.includes("limit exceeded")) {
+      return "Límite de peticiones de Google Gemini superado (Error 429). La versión gratuita de Google limita la API a 5 consultas por minuto. Por favor, espera 30 segundos y vuelve a intentarlo.";
+    }
+    if (lower.includes("api key not valid") || lower.includes("invalid api key") || lower.includes("api_key_invalid") || (lower.includes("api key") && lower.includes("invalid")) || lower.includes("invalid key")) {
+      return "Tu clave de API de Gemini no es válida o fue desactivada. Asegúrate de haberla copiado correctamente desde Google AI Studio y que no tenga espacios adicionales.";
+    }
+    return errorMsg;
   };
 
   return (
@@ -306,6 +339,37 @@ function App() {
       {/* Main Content */}
       <main className="flex-1 p-6 md:p-12 overflow-y-auto bg-kids-bg dark:bg-slate-900 transition-colors">
         <div className="max-w-5xl mx-auto space-y-8">
+          {/* Advertencia de Fallback */}
+          {fallbackWarning && (
+            <div className="bg-amber-50 dark:bg-amber-950/30 border-4 border-amber-400 p-5 rounded-3xl flex items-start gap-4 shadow-lg animate-fade-in relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-2 h-full bg-amber-400"></div>
+              <Sparkles className="text-amber-500 shrink-0 mt-1 animate-pulse" size={24} />
+              <div className="flex-1 space-y-1">
+                <h4 className="font-black text-amber-800 dark:text-amber-300 text-base flex items-center gap-2">
+                  ⚠️ Usando letras de prueba (Fallback)
+                </h4>
+                <p className="text-sm text-amber-700 dark:text-amber-400 font-bold leading-relaxed">
+                   La API de Gemini falló con el siguiente inconveniente: <span className="bg-amber-100 dark:bg-amber-900/50 px-2 py-0.5 rounded font-mono text-xs text-amber-900 dark:text-amber-200 block mt-1 mb-2">{getFriendlyErrorMessage(fallbackWarning)}</span> 
+                   Se han cargado letras y metadatos de prueba para que puedas seguir usando la herramienta. Puedes reintentar en unos segundos o revisar tu clave.
+                </p>
+                <div className="pt-2">
+                  <button 
+                    onClick={() => setShowApiModal(true)}
+                    className="btn-kids btn-secondary text-xs py-1.5 px-4 bg-amber-500 hover:bg-amber-600 border-amber-600 shadow-md text-white font-bold rounded-xl"
+                  >
+                    🔑 Configurar API Key
+                  </button>
+                </div>
+              </div>
+              <button 
+                onClick={() => setFallbackWarning(null)}
+                className="text-amber-500 hover:text-amber-700 font-bold text-xs uppercase self-start"
+              >
+                Cerrar
+              </button>
+            </div>
+          )}
+
           {/* Tema Escogido Oficial Banner */}
           {chosenTopic && (
             <div className="bg-gradient-to-r from-amber-400 to-amber-500 rounded-3xl p-6 text-slate-900 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in border-4 border-white dark:border-slate-800">

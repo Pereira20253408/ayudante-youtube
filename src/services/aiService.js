@@ -9,7 +9,7 @@ const getGenAI = () => {
   return new GoogleGenerativeAI(apiKey.trim());
 };
 // Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada
-const getFallbackScript = (topic, duration, videoType) => {
+export const getFallbackScript = (topic, duration, videoType) => {
   const script = [];
   if (videoType === "musical") {
     const cleanTopic = topic.trim();
@@ -317,7 +317,7 @@ const getFallbackScript = (topic, duration, videoType) => {
   return script;
 };
 
-const getFallbackMetadata = (topic, videoType) => {
+export const getFallbackMetadata = (topic, videoType) => {
   if (videoType === "musical") {
     return {
       titles: [
@@ -356,7 +356,7 @@ const getFallbackMetadata = (topic, videoType) => {
   };
 };
 
-const getFallbackThumbnail = (topic, videoType) => {
+export const getFallbackThumbnail = (topic, videoType) => {
   let visualPrompt = "";
   let suggestedText = "";
   if (videoType === "musical") {
@@ -376,7 +376,7 @@ export const generateScript = async (topic, duration = "1 minuto", videoType = "
   try {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { 
         responseMimeType: "application/json",
         temperature: 1.0
@@ -397,7 +397,10 @@ IMPORTANTE Y OBLIGATORIO DE ESTRUCTURA Y CALIDAD DE LETRA:
 1. CORRECCIÓN ORTOGRÁFICA Y GRAMATICAL OBLIGATORIA: Si el tema ingresado por el usuario ("${topic}") contiene errores de ortografía, errores de tipeo o gramaticales (por ejemplo, si escribe "dinoaurios" en vez de "dinosaurios", o "abja" en vez de "abeja"), DEBES CORREGIR el tema internamente antes de componer la canción. Toda la letra generada debe basarse en el tema correctamente escrito y tener una ortografía y gramática impecables en español neutro. ¡Bajo ninguna circunstancia incluyas el error ortográfico del usuario en la letra!
 2. LETRA COMPLETAMENTE LIMPIA (SIN EMOJIS NI PALABRAS RARAS): El texto en la propiedad "audio" debe ser texto plano completamente limpio. NO incluyas ningún emoji (❌), ningún símbolo musical (🎵), ningún símbolo extraño ni palabras raras, inventadas o complejas. Usa un vocabulario infantil natural, claro y correcto. ¡ESTÁ ESTRICTAMENTE PROHIBIDO USAR EMOJIS EN LOS COROS Y EN LOS VERSOS!
 3. Genera la letra de la canción estructurada en 8 secciones exactas (Verso 1, Coro, Verso 2, Coro, Verso 3, Coro, Verso 4, Coro Final).
-4. NO generes propiedades de tiempo ("time") ni descripciones visuales generales ("visual").
+4. TANTO EL CORO COMO CADA VERSO DEBEN TENER EXACTAMENTE 4 LÍNEAS DE LETRA (ni 3, ni 5, ni 6; obligatoriamente 4 líneas de letra cada uno).
+5. Las líneas deben ser cortas, con una estructura y métrica pareja, constante y fluida para que sea extremadamente fácil de cantar y ponerle ritmo musical.
+6. LA LETRA DEBE SER SUMAMENTE CREATIVA Y CONTAR UNA HISTORIA DIVERTIDA SOBRE EL TEMA DADO ("${topic}"). IMPORTANTE: NO intentes rimar o repetir el nombre completo del tema de forma literal y forzada en cada línea. La canción debe hablar SOBRE el tema (por ejemplo, si el tema es 'Perro espacial 🐕‍🚀', cuenta la historia de un perrito astronauta viajando por las estrellas y la luna, sin necesidad de repetir la frase 'perro espacial' de manera forzada en cada rima).
+7. NO generes propiedades de tiempo ("time") ni descripciones visuales generales ("visual").
 
 REGLAS PARA LA LETRA ("audio"):
 - El "Coro" debe ser sumamente llamativo, pegadizo y alegre para atraer a los niños. El mismo coro se repite de forma idéntica después de cada verso. ¡RECUERDA: NO USES EMOJIS EN EL CORO! Su atractivo debe basarse únicamente en la letra y el ritmo.
@@ -507,7 +510,7 @@ export const generateMetadata = async (topic, videoType = "historia") => {
   try {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -543,7 +546,7 @@ export const generateThumbnailIdeas = async (topic, videoType = "historia") => {
   try {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -577,17 +580,20 @@ export const generateRecommendedTopics = async (count = 1, excludeTopics = []) =
   try {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" }
     });
 
     const prompt = `Actúa como un director creativo experto en canales de YouTube infantiles.
 Genera un array JSON con exactamente ${count} ideas de temas creativos, divertidos y llamativos para videos infantiles (cuentos, canciones o videos educativos).
+REGLA CRÍTICA: Cada tema debe ser muy corto, conciso y directo, de máximo 2 o 3 palabras (un concepto descriptivo simple).
 Cada tema debe incluir un emoji infantil y coherente al final.
-Ejemplos de formato:
-"Un dinosaurio que aprende a cepillarse los dientes 🦖"
-"Aventura espacial explorando los planetas 🚀"
-"La abejita que perdió su colmena 🐝"
+Ejemplos de formato corto obligatorio:
+"Robot bailarín 🤖"
+"Perro espacial 🐕‍🚀"
+"Gatito bombero 🐱"
+"Dinosaurio dentista 🦖"
+"Tren del arcoíris 🌈"
 
 Temas que debes EXCLUIR (no los repitas bajo ninguna circunstancia): ${JSON.stringify(excludeTopics)}
 
@@ -599,26 +605,29 @@ Devuelve estrictamente un array JSON de strings con las nuevas ideas de temas:
 
     const result = await model.generateContent(prompt);
     let text = result.response.text();
-    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    text = text.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
     return JSON.parse(text);
   } catch (error) {
     console.warn("Error generando temas recomendados, usando pool de fallbacks:", error);
     const fallbackPool = [
-      "La hormiga gigante que quería cantar ópera 🐜",
-      "Un día de compras en el supermercado de juguetes 🛒",
-      "El carro de bomberos que le tenía miedo al agua 🚒",
-      "Aventura en la selva buscando al mono dorado 🐒",
-      "El robot bailarín que se quedó sin batería 🤖",
-      "La nube triste que quería llover caramelos 🌧️",
-      "Una escuela mágica bajo el agua para pecesitos 🐟",
-      "El sol que quería dormir un ratito más ☀️",
-      "La carrera de caracoles más rápida del mundo 🐌",
-      "Un viaje al centro de la tierra con excavadoras 🚜",
-      "El koala que quería ser chef de cocina 🐨",
-      "Un cohete espacial impulsado por globos de fiesta 🎈",
-      "El pirata bueno que regalaba juguetes en su isla 🏴‍☠️",
-      "Un tren que viaja por el arcoíris mágico 🌈",
-      "La jirafa que usaba bufandas gigantes de colores 🦒"
+      "Dinosaurio dentista 🦖",
+      "Perro espacial 🐕‍🚀",
+      "Robot bailarín 🤖",
+      "Gatito bombero 🐱",
+      "Tren del arcoíris 🌈",
+      "Abeja exploradora 🐝",
+      "Hormiga cantante 🐜",
+      "Carro de carreras 🏎️",
+      "Koala cocinero 🐨",
+      "Pirata bueno 🏴‍☠️",
+      "Nube de caramelos 🍬",
+      "Peces traviesos 🐟",
+      "Sol dormilón ☀️",
+      "Cohete de globos 🚀",
+      "Jirafa elegante 🦒",
+      "Tiburón surfista 🦈",
+      "Oso pintor 🐻",
+      "Conejo cartero 🐰"
     ];
     // Filtrar los excluidos
     const filtered = fallbackPool.filter(t => !excludeTopics.includes(t));
@@ -628,3 +637,137 @@ Devuelve estrictamente un array JSON de strings con las nuevas ideas de temas:
   }
 };
 
+export const generateImagePromptsForScript = async (topic, scriptData) => {
+  const apiKey = localStorage.getItem('ckc_gemini_api_key') || import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) throw new Error('API_KEY_MISSING');
+  const { GoogleGenerativeAI } = await import('@google/generative-ai');
+  const genAI = new GoogleGenerativeAI(apiKey.trim());
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
+  
+  const scriptText = scriptData.map(s => s.audio).join('\n');
+  const prompt = `Genera prompts de imágenes para un video musical infantil 3D sobre: "${topic}".
+Basado en esta letra:
+${scriptText}
+
+Devuelve un JSON Array de objetos, un objeto por cada sección de la letra. Cada objeto debe tener la propiedad "imagePrompts", que es un array de objetos con "line" (la línea de la letra en español) y "prompt" (el prompt de imagen en INGLÉS).
+Reglas:
+- 4 imagePrompts por sección.
+- Estilo en el prompt visual (inglés): 3D cartoon style for kids, bright, vibrant colors.
+- Consistencia del personaje.
+- FORMATO EXACTO: [{ "imagePrompts": [{ "line": "...", "prompt": "..." }] }]`;
+  
+  const result = await model.generateContent(prompt);
+  let s = result.response.text().trim();
+  if (s.startsWith('\`\`\`json')) s = s.replace(/^\`\`\`json\n/, '').replace(/\n\`\`\`$/, '');
+  else if (s.startsWith('\`\`\`')) s = s.replace(/^\`\`\`\n/, '').replace(/\n\`\`\`$/, '');
+  
+  return JSON.parse(s);
+};
+
+export const generateMusicPromptForScript = async (topic, scriptData) => {
+  const apiKey = localStorage.getItem('ckc_gemini_api_key') || import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) throw new Error('API_KEY_MISSING');
+  const { GoogleGenerativeAI } = await import('@google/generative-ai');
+  const genAI = new GoogleGenerativeAI(apiKey.trim());
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
+  
+  const prompt = `Genera un prompt de estilo musical en inglés para una canción infantil muy alegre, pegadiza y bailable sobre "${topic}".
+Devuelve un JSON con formato: { "musicPrompt": "..." }`;
+  
+  const result = await model.generateContent(prompt);
+  let s = result.response.text().trim();
+  if (s.startsWith('\`\`\`json')) s = s.replace(/^\`\`\`json\n/, '').replace(/\n\`\`\`$/, '');
+  else if (s.startsWith('\`\`\`')) s = s.replace(/^\`\`\`\n/, '').replace(/\n\`\`\`$/, '');
+  
+  return JSON.parse(s);
+};
+
+export const generateAllContent = async (topic, duration = "1 minuto", videoType = "historia") => {
+  try {
+    const apiKey = localStorage.getItem('ckc_gemini_api_key') || import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API_KEY_MISSING');
+    const { GoogleGenerativeAI } = await import('@google/generative-ai');
+    const genAI = new GoogleGenerativeAI(apiKey.trim());
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
+
+    const prompt = `Actúa como un equipo experto de producción de YouTube (Guionista, SEO y Director de Arte).
+Tema: "${topic}"
+Tipo de video: "${videoType}"
+
+Genera todo el contenido para este video en un solo JSON con la siguiente estructura exacta:
+{
+  "script": [
+    { "audio": "[Coro]\\n...", "time": "0:00 - 0:15" },
+    { "audio": "[Verso 1]\\n...", "time": "0:15 - 0:30" },
+    { "audio": "[Coro]\\n...", "time": "0:30 - 0:45" },
+    { "audio": "[Verso 2]\\n...", "time": "0:45 - 1:00" },
+    { "audio": "[Coro]\\n...", "time": "1:00 - 1:15" },
+    { "audio": "[Verso 3]\\n...", "time": "1:15 - 1:30" },
+    { "audio": "[Coro]\\n...", "time": "1:30 - 1:45" },
+    { "audio": "[Verso 4]\\n...", "time": "1:45 - 2:00" }
+  ],
+  "metadata": {
+    "titles": ["Título 1", "Título 2", "Título 3", "Título 4", "Título 5"],
+    "description": "Descripción del video...",
+    "hashtags": ["#Tag1", "#Tag2"]
+  },
+  "thumbnail": {
+    "visualPrompt": "3D estilo cartoon infantil, brillo, colores vibrantes...",
+    "suggestedText": "TEXTO CORTO"
+  }
+}
+
+REGLAS PARA EL SCRIPT:
+- Si es musical:
+  1. El JSON de "script" debe tener EXACTAMENTE 8 secciones alternando Coro y Verso (Coro, Verso 1, Coro, Verso 2, Coro, Verso 3, Coro, Verso 4).
+  2. TANTO EL CORO COMO CADA VERSO DEBEN TENER EXACTAMENTE 4 LÍNEAS DE LETRA (ni 3, ni 5, ni 6; obligatoriamente 4 líneas de letra cada uno).
+  3. Las líneas deben ser cortas, con una estructura y métrica pareja, constante y fluida para que sea extremadamente fácil de cantar y ponerle ritmo musical.
+  4. Las rimas deben ser claras, pegadizas y divertidas, totalmente libres de clichés comunes.
+  5. El Coro debe ser idéntico las 4 veces.
+  6. ESTÁ ESTRICTAMENTE PROHIBIDO usar emojis o caracteres especiales en la letra.
+  7. LA LETRA DEBE SER SUMAMENTE CREATIVA Y CONTAR UNA HISTORIA DIVERTIDA SOBRE EL TEMA DADO ("${topic}"). IMPORTANTE: NO intentes rimar o repetir el nombre completo del tema de forma literal y forzada en cada línea. La canción debe hablar SOBRE el tema (por ejemplo, si el tema es 'Perro espacial 🐕‍🚀', cuenta la historia de un perrito astronauta viajando por las estrellas y la luna, sin necesidad de repetir la frase 'perro espacial' de manera forzada en cada rima).
+- Si es historia o narración: divídelo en segmentos de tiempo, sin repetir historias.
+- IMPORTANTE: SOLO genera las propiedades "audio" y "time" dentro del array "script". NO generes "imagePrompts" ni "musicPrompt" aquí.
+
+REGLAS PARA METADATA:
+- Títulos llamativos y virales con emojis.
+- 15 hashtags relevantes.
+
+REGLAS PARA THUMBNAIL:
+- visualPrompt detallado en español para generadores como Midjourney, 3D cartoon infantil.
+- suggestedText máximo 3 palabras en mayúsculas.`;
+
+    const result = await model.generateContent(prompt);
+    let text = result.response.text().trim();
+    if (text.startsWith('\`\`\`json')) text = text.replace(/^\`\`\`json\n/, '').replace(/\n\`\`\`$/, '');
+    else if (text.startsWith('\`\`\`')) text = text.replace(/^\`\`\`\n/, '').replace(/\n\`\`\`$/, '');
+    
+    const parsedData = JSON.parse(text);
+    if (parsedData && Array.isArray(parsedData.script)) {
+      parsedData.script.forEach(item => {
+        if (item.audio) {
+          item.audio = item.audio.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E6}-\u{1F1FF}]|[\u{2B50}]|[\u{2B55}]|[\u{23F3}]|[\u{23F0}]|[\u{23E9}-\u{23EC}]|[\u{25B6}]/gu, '');
+        }
+      });
+    }
+    return parsedData;
+  } catch (error) {
+    console.warn("Gemini API Error en generateAllContent, usando fallbacks:", error);
+    if (error.message === "API_KEY_MISSING") throw error;
+    
+    const fallbackScript = getFallbackScript(topic, duration, videoType);
+    const fallbackMetadata = getFallbackMetadata(topic, videoType);
+    const fallbackThumbnail = getFallbackThumbnail(topic, videoType);
+    
+    const cleanFallbackScript = fallbackScript.map(s => ({
+      audio: s.audio,
+      time: s.time || "0:00"
+    }));
+    
+    return {
+      script: cleanFallbackScript,
+      metadata: fallbackMetadata,
+      thumbnail: fallbackThumbnail
+    };
+  }
+};

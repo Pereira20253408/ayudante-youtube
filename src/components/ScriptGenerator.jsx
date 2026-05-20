@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Sparkles, Copy, Check, Loader2 } from 'lucide-react';
-import { generateScript } from '../services/aiService';
+import { Sparkles, Copy, Check, Loader2, RefreshCw } from 'lucide-react';
+import { generateScript, generateImagePromptsForScript, generateMusicPromptForScript } from '../services/aiService';
 
 export default function ScriptGenerator({ topic, duration, videoType, script, setScript, isLoading: isParentLoading }) {
   const [isLocalLoading, setIsLocalLoading] = useState(false);
@@ -8,6 +8,60 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
   const [showAll, setShowAll] = useState(false);
   const [activeTab, setActiveTab] = useState('letra');
   const [promptCopiedIndex, setPromptCopiedIndex] = useState(null);
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
+  const [isGeneratingMusic, setIsGeneratingMusic] = useState(false);
+
+  const hasImagePrompts = script && script.some(row => row.imagePrompts && row.imagePrompts.length > 0);
+  const hasMusicPrompt = script && script[0]?.musicPrompt;
+
+  const handleGenerateImages = async () => {
+    if (!topic.trim() || !script) return;
+    setIsGeneratingImages(true);
+    try {
+      const res = await generateImagePromptsForScript(topic, script);
+      const updatedScript = script.map((item, idx) => {
+        return {
+          ...item,
+          imagePrompts: res[idx]?.imagePrompts || []
+        };
+      });
+      setScript(updatedScript);
+    } catch (error) {
+      console.error(error);
+      if (error.message === 'API_KEY_MISSING') {
+        alert('🔑 No has configurado tu API Key de Google Gemini. Por favor haz clic en el botón "🔑 Configurar API Key" en el menú lateral para ingresar tu clave.');
+      } else {
+        alert('Error al generar los prompts de imagen: ' + (error.message || error));
+      }
+    } finally {
+      setIsGeneratingImages(false);
+    }
+  };
+
+  const handleGenerateMusic = async () => {
+    if (!topic.trim() || !script) return;
+    setIsGeneratingMusic(true);
+    try {
+      const res = await generateMusicPromptForScript(topic, script);
+      const updatedScript = [...script];
+      if (updatedScript[0]) {
+        updatedScript[0] = {
+          ...updatedScript[0],
+          musicPrompt: res.musicPrompt
+        };
+      }
+      setScript(updatedScript);
+    } catch (error) {
+      console.error(error);
+      if (error.message === 'API_KEY_MISSING') {
+        alert('🔑 No has configurado tu API Key de Google Gemini. Por favor haz clic en el botón "🔑 Configurar API Key" en el menú lateral para ingresar tu clave.');
+      } else {
+        alert('Error al generar el estilo musical: ' + (error.message || error));
+      }
+    } finally {
+      setIsGeneratingMusic(false);
+    }
+  };
 
   const isLoading = isParentLoading || isLocalLoading;
 
@@ -138,7 +192,8 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
               {activeTab === 'letra' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
                   {displayedScript.map((row, idx) => {
-                    const isChorus = row.audio?.includes('[Coro]') || row.audio?.includes('Coro');
+                    const audioLower = row.audio?.toLowerCase() || '';
+                    const isChorus = audioLower.includes('[coro]') || audioLower.includes('coro');
                     const cleanAudio = row.audio?.replace(/\[.*?\]\n?/, '').trim();
                     const sectionTag = row.audio?.match(/\[(.*?)\]/)?.[1] || (isChorus ? 'Coro' : `Verso ${idx + 1}`);
 
@@ -158,96 +213,159 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                 </div>
               ) : activeTab === 'estilo' ? (
                 <div className="space-y-6 animate-fade-in">
-                  <div className="bg-kids-purple/10 border-4 border-kids-purple/30 p-6 rounded-3xl flex flex-col items-start gap-4 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <span className="text-4xl">🎧</span>
-                      <div>
-                        <h4 className="text-xl font-black text-slate-800 dark:text-white">Instrucciones de Estilo (Inglés)</h4>
+                  {!hasMusicPrompt ? (
+                    <div className="bg-kids-purple/10 border-4 border-kids-purple/30 p-8 rounded-3xl flex flex-col items-center justify-center text-center gap-6 shadow-sm">
+                      <span className="text-6xl animate-bounce">🎧</span>
+                      <div className="max-w-md space-y-2">
+                        <h4 className="text-2xl font-black text-slate-800 dark:text-white">Estilo Musical no generado</h4>
                         <p className="text-slate-600 dark:text-slate-300 font-bold text-sm">
-                          Copia y pega este texto en herramientas como Suno AI o Udio (en el campo "Style of Music") para generar la canción perfecta.
+                          Genera un prompt de estilo musical en inglés alegre y optimizado para Suno AI o Udio, adaptado a la letra de tu canción.
                         </p>
                       </div>
+                      <button
+                        onClick={handleGenerateMusic}
+                        disabled={isGeneratingMusic}
+                        className="btn-kids bg-kids-purple hover:bg-purple-600 text-white flex items-center gap-2 px-8 py-4 text-lg font-black shadow-lg"
+                      >
+                        {isGeneratingMusic ? <Loader2 className="animate-spin" /> : <Sparkles />}
+                        {isGeneratingMusic ? 'Generando Estilo...' : 'Generar Estilo Musical con IA'}
+                      </button>
                     </div>
-                    
-                    <div className="w-full bg-white dark:bg-slate-800 p-6 rounded-2xl border-2 border-slate-200 dark:border-slate-700 mt-2">
-                      <p className="text-kids-purple font-mono font-bold text-lg select-all leading-relaxed break-words">
-                        {script[0]?.musicPrompt || "upbeat children's music, happy pop, catchy melody, acoustic guitar, bouncy rhythm"}
-                      </p>
-                    </div>
+                  ) : (
+                    <div className="bg-kids-purple/10 border-4 border-kids-purple/30 p-6 rounded-3xl flex flex-col items-start gap-4 shadow-sm animate-fade-in">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-4xl">🎧</span>
+                          <div>
+                            <h4 className="text-xl font-black text-slate-800 dark:text-white">Instrucciones de Estilo (Inglés)</h4>
+                            <p className="text-slate-600 dark:text-slate-300 font-bold text-sm">
+                              Copia y pega este texto en herramientas como Suno AI o Udio (en el campo "Style of Music") para generar la canción perfecta.
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleGenerateMusic}
+                          disabled={isGeneratingMusic}
+                          className="btn-kids text-xs py-1.5 px-4 bg-kids-purple hover:bg-purple-600 text-white font-bold rounded-xl flex items-center gap-2 self-stretch md:self-auto"
+                        >
+                          {isGeneratingMusic ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
+                          {isGeneratingMusic ? 'Regenerando...' : 'Regenerar Estilo'}
+                        </button>
+                      </div>
+                      
+                      <div className="w-full bg-white dark:bg-slate-800 p-6 rounded-2xl border-2 border-slate-200 dark:border-slate-700 mt-2">
+                        <p className="text-kids-purple font-mono font-bold text-lg select-all leading-relaxed break-words">
+                          {script[0]?.musicPrompt}
+                        </p>
+                      </div>
 
-                    <button
-                      onClick={() => {
-                        const textToCopy = script[0]?.musicPrompt || "upbeat children's music, happy pop, catchy melody, acoustic guitar, bouncy rhythm";
-                        navigator.clipboard.writeText(textToCopy);
-                        setPromptCopiedIndex('music');
-                        setTimeout(() => setPromptCopiedIndex(null), 2000);
-                      }}
-                      className="btn-kids w-full bg-kids-purple hover:bg-purple-600 text-white flex items-center justify-center gap-2"
-                    >
-                      {promptCopiedIndex === 'music' ? <Check size={20} /> : <Copy size={20} />}
-                      {promptCopiedIndex === 'music' ? '¡Estilo Copiado!' : 'Copiar Estilo Musical'}
-                    </button>
-                  </div>
+                      <button
+                        onClick={() => {
+                          const textToCopy = script[0]?.musicPrompt;
+                          navigator.clipboard.writeText(textToCopy);
+                          setPromptCopiedIndex('music');
+                          setTimeout(() => setPromptCopiedIndex(null), 2000);
+                        }}
+                        className="btn-kids w-full bg-kids-purple hover:bg-purple-600 text-white flex items-center justify-center gap-2"
+                      >
+                        {promptCopiedIndex === 'music' ? <Check size={20} /> : <Copy size={20} />}
+                        {promptCopiedIndex === 'music' ? '¡Estilo Copiado!' : 'Copiar Estilo Musical'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-6 animate-fade-in">
-                  <div className="bg-kids-primary/10 border-4 border-kids-primary/30 p-4 rounded-2xl flex items-center gap-3">
-                    <span className="text-3xl">💡</span>
-                    <p className="text-slate-700 dark:text-slate-300 font-bold text-sm leading-relaxed">
-                      Copia estos prompts en herramientas como Midjourney, DALL-E 3, Bing Image Creator o Ideogram. Todos siguen el mismo estilo maestro de 3D cartoon infantil para garantizar que las imágenes de tu video tengan coherencia absoluta.
-                    </p>
-                  </div>
-
-                  <div className="space-y-6">
-                    {(() => {
-                      let chorusSeen = false;
-                      const allImagePrompts = [];
-
-                      displayedScript.forEach((row, sIdx) => {
-                        const isChorus = row.audio?.includes('[Coro]') || row.audio?.includes('Coro');
-                        if (isChorus) {
-                          if (!chorusSeen) {
-                            if (row.imagePrompts) {
-                              allImagePrompts.push(...row.imagePrompts.map(p => ({ ...p, sectionTag: 'Coro' })));
-                            }
-                            chorusSeen = true;
-                          }
-                        } else {
-                          const sTag = row.audio?.match(/\[(.*?)\]/)?.[1] || `Verso ${sIdx + 1}`;
-                          if (row.imagePrompts) {
-                            allImagePrompts.push(...row.imagePrompts.map(p => ({ ...p, sectionTag: sTag })));
-                          }
-                        }
-                      });
-
-                      return allImagePrompts.map((item, idx) => (
-                        <div key={idx} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-primary/30 rounded-3xl p-6 shadow-sm hover:border-kids-primary transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
-                          <div className="absolute top-0 right-0 bg-kids-primary text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
-                            {item.sectionTag} • Línea {idx + 1}
-                          </div>
-                          <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
-                            <p className="text-kids-secondary font-black text-xl mb-3 flex items-center gap-2">
-                              <span>🎵</span> "{item.line}"
-                            </p>
-                            <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words">
-                              {item.prompt}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(item.prompt);
-                              setPromptCopiedIndex(idx);
-                              setTimeout(() => setPromptCopiedIndex(null), 2000);
-                            }}
-                            className="btn-kids btn-primary whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
-                          >
-                            {promptCopiedIndex === idx ? <Check size={20} /> : <Copy size={20} />}
-                            {promptCopiedIndex === idx ? '¡Copiado!' : 'Copiar Prompt'}
-                          </button>
+                  {!hasImagePrompts ? (
+                    <div className="bg-kids-primary/10 border-4 border-kids-primary/30 p-8 rounded-3xl flex flex-col items-center justify-center text-center gap-6 shadow-sm">
+                      <span className="text-6xl animate-bounce">🎨</span>
+                      <div className="max-w-md space-y-2">
+                        <h4 className="text-2xl font-black text-slate-800 dark:text-white">Prompts de Imagen no generados</h4>
+                        <p className="text-slate-600 dark:text-slate-300 font-bold text-sm">
+                          Genera prompts de imagen en inglés para cada línea de tu canción en estilo 3D cartoon infantil con coherencia de personaje.
+                        </p>
+                      </div>
+                      <button
+                        onClick={handleGenerateImages}
+                        disabled={isGeneratingImages}
+                        className="btn-kids btn-primary flex items-center gap-2 px-8 py-4 text-lg font-black shadow-lg"
+                      >
+                        {isGeneratingImages ? <Loader2 className="animate-spin" /> : <Sparkles />}
+                        {isGeneratingImages ? 'Generando Prompts...' : 'Generar Prompts de Imagen con IA'}
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="bg-kids-primary/10 border-4 border-kids-primary/30 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">💡</span>
+                          <p className="text-slate-700 dark:text-slate-300 font-bold text-sm leading-relaxed">
+                            Copia estos prompts en herramientas como Midjourney, DALL-E 3, Bing Image Creator o Ideogram. Todos siguen el mismo estilo maestro de 3D cartoon infantil para garantizar que las imágenes de tu video tengan coherencia absoluta.
+                          </p>
                         </div>
-                      ));
-                    })()}
-                  </div>
+                        <button
+                          onClick={handleGenerateImages}
+                          disabled={isGeneratingImages}
+                          className="btn-kids text-xs py-1.5 px-4 bg-kids-primary hover:bg-blue-600 text-white font-bold rounded-xl flex items-center gap-2 self-stretch md:self-auto shrink-0 shadow-sm"
+                        >
+                          {isGeneratingImages ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} />}
+                          {isGeneratingImages ? 'Regenerando...' : 'Regenerar Prompts'}
+                        </button>
+                      </div>
+
+                      <div className="space-y-6 animate-fade-in">
+                        {(() => {
+                          let chorusSeen = false;
+                          const allImagePrompts = [];
+
+                          displayedScript.forEach((row, sIdx) => {
+                            const audioLower = row.audio?.toLowerCase() || '';
+                            const isChorus = audioLower.includes('[coro]') || audioLower.includes('coro');
+                            if (isChorus) {
+                              if (!chorusSeen) {
+                                if (row.imagePrompts) {
+                                  allImagePrompts.push(...row.imagePrompts.map(p => ({ ...p, sectionTag: 'Coro' })));
+                                }
+                                chorusSeen = true;
+                              }
+                            } else {
+                              const sTag = row.audio?.match(/\[(.*?)\]/)?.[1] || `Verso ${sIdx + 1}`;
+                              if (row.imagePrompts) {
+                                allImagePrompts.push(...row.imagePrompts.map(p => ({ ...p, sectionTag: sTag })));
+                              }
+                            }
+                          });
+
+                          return allImagePrompts.map((item, idx) => (
+                            <div key={idx} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-primary/30 rounded-3xl p-6 shadow-sm hover:border-kids-primary transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
+                              <div className="absolute top-0 right-0 bg-kids-primary text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
+                                {item.sectionTag} • Línea {idx + 1}
+                              </div>
+                              <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
+                                <p className="text-kids-secondary font-black text-xl mb-3 flex items-center gap-2">
+                                  <span>🎵</span> "{item.line}"
+                                </p>
+                                <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words">
+                                  {item.prompt}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(item.prompt);
+                                  setPromptCopiedIndex(idx);
+                                  setTimeout(() => setPromptCopiedIndex(null), 2000);
+                                }}
+                                className="btn-kids btn-primary whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
+                              >
+                                {promptCopiedIndex === idx ? <Check size={20} /> : <Copy size={20} />}
+                                {promptCopiedIndex === idx ? '¡Copiado!' : 'Copiar Prompt'}
+                              </button>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
