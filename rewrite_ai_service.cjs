@@ -106,16 +106,39 @@ export const generateImagePromptsForScript = async (topic, scriptData) => {
   const model = genAI.getGenerativeModel({ model: getGeminiModelName(), generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
   
   const scriptText = scriptData.map(s => s.audio).join('\\n');
-  const prompt = \`Genera prompts de imágenes para un video musical infantil 3D sobre: "\${topic}".
-Basado en esta letra:
+  const prompt = \`Genera prompts de imágenes para un video musical infantil 3D sobre el tema: "\${topic}".
+Basado en la siguiente letra de la canción:
 \${scriptText}
 
-Devuelve un JSON Array de objetos, un objeto por cada sección de la letra. Cada objeto debe tener la propiedad "imagePrompts", que es un array de objetos con "line" (la línea de la letra en español) y "prompt" (el prompt de imagen en INGLÉS).
+Debes generar los prompts de las secciones, un prompt de introducción y 4 prompts extras de relleno.
+Devuelve un JSON con el siguiente formato exacto:
+{
+  "sections": [
+    {
+      "imagePrompts": [
+        { "line": "...", "prompt": "..." }
+      ]
+    }
+  ],
+  "introPrompt": {
+    "line": "Intro musical - Presentación alegre del tema de la canción",
+    "prompt": "..."
+  },
+  "extraPrompts": [
+    { "line": "Escena de relleno 1 - Transición divertida en el mismo estilo", "prompt": "..." },
+    { "line": "Escena de relleno 2 - Detalle del personaje bailando o sonriendo", "prompt": "..." },
+    { "line": "Escena de relleno 3 - Paisaje de fondo o elemento secundario alegre", "prompt": "..." },
+    { "line": "Escena de relleno 4 - Final de transición o plano general colorido", "prompt": "..." }
+  ]
+}
+
 Reglas:
-- 4 imagePrompts por sección.
-- Estilo en el prompt visual (inglés): 3D cartoon style for kids, bright, vibrant colors.
-- Consistencia del personaje.
-- FORMATO EXACTO: [{ "imagePrompts": [{ "line": "...", "prompt": "..." }] }]\`;
+- Para las secciones ("sections"): exactamente el mismo orden que la letra proporcionada. Cada sección debe tener un array "imagePrompts" con exactamente 4 prompts (uno para cada línea de la sección).
+- Para el prompt de introducción ("introPrompt"): debe describir una escena de inicio atractiva, colorida y misteriosa/divertida sobre el tema general de la canción.
+- Para los 4 prompts extras de relleno ("extraPrompts"): deben ser escenas genéricas y variadas pero sobre el mismo personaje y tema, muy coloridas, ideales para rellenar vacíos en la edición.
+- Idioma de los prompts visuales: todos los prompts visuales en el campo "prompt" deben estar en INGLÉS.
+- Estilo visual de todos los prompts (inglés): 3D cartoon style for kids, bright, vibrant colors, Pixar style, cute, friendly, detailed background.
+- Mantén la consistencia absoluta del protagonista/personaje en todos los prompts.\`;
   
   const result = await model.generateContent(prompt);
   let s = result.response.text().trim();

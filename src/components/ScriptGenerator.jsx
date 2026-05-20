@@ -37,10 +37,23 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
       // 2. Generar prompts para estas secciones únicas
       const res = await generateImagePromptsForScript(topic, uniqueSections);
       
+      // Soporte para compatibilidad si la IA devuelve formato antiguo (un array directo) o el nuevo formato estructurado
+      let sectionsData = [];
+      let introData = null;
+      let extraData = [];
+
+      if (Array.isArray(res)) {
+        sectionsData = res;
+      } else if (res && typeof res === 'object') {
+        sectionsData = res.sections || [];
+        introData = res.introPrompt || null;
+        extraData = res.extraPrompts || [];
+      }
+
       // 3. Mapear las respuestas del JSON a las secciones únicas
       const uniqueWithPrompts = uniqueSections.map((item, idx) => ({
         ...item,
-        imagePrompts: res[idx]?.imagePrompts || []
+        imagePrompts: sectionsData[idx]?.imagePrompts || []
       }));
 
       const coroItem = uniqueWithPrompts.find(item => item.isChorus);
@@ -48,22 +61,25 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
       
       // 4. Mapear de vuelta al script original completo (8 secciones)
       let versoIdx = 0;
-      const updatedScript = script.map((item) => {
+      const updatedScript = script.map((item, idx) => {
         const audioLower = item.audio?.toLowerCase() || '';
         const isChorus = audioLower.includes('[coro]') || audioLower.includes('coro');
+        
+        let newItem = { ...item };
         if (isChorus) {
-          return {
-            ...item,
-            imagePrompts: coroItem?.imagePrompts || []
-          };
+          newItem.imagePrompts = coroItem?.imagePrompts || [];
         } else {
-          const vPrompts = versoItems[versoIdx]?.imagePrompts || [];
+          newItem.imagePrompts = versoItems[versoIdx]?.imagePrompts || [];
           versoIdx++;
-          return {
-            ...item,
-            imagePrompts: vPrompts
-          };
         }
+
+        // Guardamos los extras en el primer elemento de la canción para fácil persistencia
+        if (idx === 0) {
+          newItem.introPrompt = introData;
+          newItem.extraPrompts = extraData;
+        }
+
+        return newItem;
       });
 
       setScript(updatedScript);
@@ -355,6 +371,35 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                       </div>
 
                       <div className="space-y-6 animate-fade-in">
+                        {/* 1. Renderizar el prompt de Intro si existe */}
+                        {script[0]?.introPrompt && (
+                          <div className="bg-amber-50/50 dark:bg-amber-950/10 border-4 border-amber-400/40 rounded-3xl p-6 shadow-sm hover:border-amber-400 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
+                              🎬 Introducción
+                            </div>
+                            <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
+                              <p className="text-amber-600 dark:text-amber-400 font-black text-xl mb-3 flex items-center gap-2">
+                                <span>🎬</span> {script[0].introPrompt.line}
+                              </p>
+                              <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words font-semibold">
+                                {script[0].introPrompt.prompt}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(script[0].introPrompt.prompt);
+                                setPromptCopiedIndex('intro');
+                                setTimeout(() => setPromptCopiedIndex(null), 2000);
+                              }}
+                              className="btn-kids bg-amber-500 hover:bg-amber-600 text-white whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
+                            >
+                              {promptCopiedIndex === 'intro' ? <Check size={20} /> : <Copy size={20} />}
+                              {promptCopiedIndex === 'intro' ? '¡Intro Copiado!' : 'Copiar Prompt Intro'}
+                            </button>
+                          </div>
+                        )}
+
+                        {/* 2. Renderizar los prompts de la letra de la canción */}
                         {(() => {
                           let chorusSeen = false;
                           const allImagePrompts = [];
@@ -378,7 +423,7 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                           });
 
                           return allImagePrompts.map((item, idx) => (
-                            <div key={idx} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-primary/30 rounded-3xl p-6 shadow-sm hover:border-kids-primary transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
+                            <div key={`lyrics-${idx}`} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-primary/30 rounded-3xl p-6 shadow-sm hover:border-kids-primary transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
                               <div className="absolute top-0 right-0 bg-kids-primary text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
                                 {item.sectionTag} • Línea {idx + 1}
                               </div>
@@ -404,6 +449,34 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                             </div>
                           ));
                         })()}
+
+                        {/* 3. Renderizar los 4 prompts extras de relleno */}
+                        {script[0]?.extraPrompts && script[0].extraPrompts.map((item, idx) => (
+                          <div key={`extra-${idx}`} className="bg-emerald-50/50 dark:bg-emerald-950/10 border-4 border-emerald-400/40 rounded-3xl p-6 shadow-sm hover:border-emerald-400 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
+                              ✨ Relleno / Extra {idx + 1}
+                            </div>
+                            <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
+                              <p className="text-emerald-600 dark:text-emerald-400 font-black text-xl mb-3 flex items-center gap-2">
+                                <span>✨</span> {item.line}
+                              </p>
+                              <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words">
+                                {item.prompt}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(item.prompt);
+                                setPromptCopiedIndex(`extra-${idx}`);
+                                setTimeout(() => setPromptCopiedIndex(null), 2000);
+                              }}
+                              className="btn-kids bg-emerald-500 hover:bg-emerald-600 text-white whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
+                            >
+                              {promptCopiedIndex === `extra-${idx}` ? <Check size={20} /> : <Copy size={20} />}
+                              {promptCopiedIndex === `extra-${idx}` ? '¡Relleno Copiado!' : 'Copiar Prompt Relleno'}
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     </>
                   )}
