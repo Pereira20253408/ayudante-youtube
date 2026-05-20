@@ -30,6 +30,7 @@ function App() {
   const [apiKey, setApiKey] = useState('');
   const [showApiModal, setShowApiModal] = useState(false);
   const [fallbackWarning, setFallbackWarning] = useState(null);
+  const [geminiModel, setGeminiModel] = useState('gemini-1.5-flash');
 
   // Global results state
   const [script, setScript] = useState(null);
@@ -49,6 +50,7 @@ function App() {
     const savedThumbnail = localStorage.getItem('ckc_thumbnail');
     const savedApiKey = localStorage.getItem('ckc_gemini_api_key');
     const savedSuggestedTopics = localStorage.getItem('ckc_suggested_topics');
+    const savedModel = localStorage.getItem('ckc_gemini_model');
 
     if (savedTopic) setTopic(savedTopic);
     if (savedDuration) setDuration(savedDuration);
@@ -61,6 +63,7 @@ function App() {
     if (savedThumbnail) setThumbnailIdea(JSON.parse(savedThumbnail));
     if (savedApiKey) setApiKey(savedApiKey);
     if (savedSuggestedTopics) setSuggestedTopics(JSON.parse(savedSuggestedTopics));
+    if (savedModel) setGeminiModel(savedModel);
 
     setIsLoaded(true);
   }, []);
@@ -220,18 +223,37 @@ function App() {
               Para generar letras de canciones, guiones y metadatos con Inteligencia Artificial real de Google Gemini, ingresa tu clave de API. 
               Esta clave se guarda de forma 100% segura y cifrada en tu propio navegador (localStorage) y nunca se sube a GitHub ni a ningún servidor externo.
             </p>
-            <div>
-              <label className="block text-xs font-black text-slate-400 uppercase mb-2">Tu API Key (AI Studio)</label>
-              <input 
-                type="password" 
-                placeholder="AIzaSy..." 
-                className="input-kids py-3 text-sm font-mono"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-              />
-              <p className="text-xs text-slate-400 font-bold mt-2">
-                ¿No tienes una? Consíguela gratis en <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" className="text-kids-secondary underline hover:text-blue-500 font-black">Google AI Studio</a>.
-              </p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-black text-slate-400 uppercase mb-2">Tu API Key (AI Studio)</label>
+                <input 
+                  type="password" 
+                  placeholder="AIzaSy..." 
+                  className="input-kids py-3 text-sm font-mono"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                />
+                <p className="text-xs text-slate-400 font-bold mt-2">
+                  ¿No tienes una? Consíguela gratis en <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" className="text-kids-secondary underline hover:text-blue-500 font-black">Google AI Studio</a>.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-400 uppercase mb-2">Modelo de Gemini</label>
+                <select
+                  value={geminiModel}
+                  onChange={(e) => setGeminiModel(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-2xl p-3 font-bold text-slate-800 dark:text-white focus:outline-none focus:border-kids-secondary transition-all"
+                >
+                  <option value="gemini-1.5-flash">Gemini 1.5 Flash (Gratuito, 1500 consultas/día)</option>
+                  <option value="gemini-2.5-flash">Gemini 2.5 Flash (Gratuito, 20 consultas/día)</option>
+                </select>
+                <p className="text-[11px] text-slate-400 font-bold mt-1.5 leading-relaxed">
+                  {geminiModel === 'gemini-1.5-flash' 
+                    ? "💡 Recomendado para cuentas gratuitas: ofrece una cuota generosa de hasta 1500 peticiones por día." 
+                    : "⚠️ Límite estricto de 20 consultas gratis al día por cuenta. Recomendado solo si tienes facturación vinculada."}
+                </p>
+              </div>
             </div>
             <div className="flex justify-end gap-3 pt-4 border-t-2 border-slate-100 dark:border-slate-700">
               <button 
@@ -243,12 +265,13 @@ function App() {
               <button 
                 onClick={() => {
                   localStorage.setItem('ckc_gemini_api_key', apiKey.trim());
-                  alert('¡API Key guardada correctamente en tu navegador!');
+                  localStorage.setItem('ckc_gemini_model', geminiModel);
+                  alert('¡Configuración guardada correctamente!');
                   setShowApiModal(false);
                 }}
                 className="btn-kids btn-secondary text-sm py-3 px-6"
               >
-                Guardar API Key
+                Guardar Configuración
               </button>
             </div>
           </div>

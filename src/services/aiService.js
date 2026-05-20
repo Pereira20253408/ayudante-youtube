@@ -8,6 +8,11 @@ const getGenAI = () => {
   }
   return new GoogleGenerativeAI(apiKey.trim());
 };
+
+// Obtiene el modelo configurado por el usuario o usa el predeterminado (gemini-1.5-flash para evitar límites de 20 consultas)
+export const getGeminiModelName = () => {
+  return localStorage.getItem('ckc_gemini_model') || 'gemini-1.5-flash';
+};
 // Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada
 export const getFallbackScript = (topic, duration, videoType) => {
   const script = [];
@@ -376,7 +381,7 @@ export const generateScript = async (topic, duration = "1 minuto", videoType = "
   try {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash",
+      model: getGeminiModelName(),
       generationConfig: { 
         responseMimeType: "application/json",
         temperature: 1.0
@@ -510,7 +515,7 @@ export const generateMetadata = async (topic, videoType = "historia") => {
   try {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash",
+      model: getGeminiModelName(),
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -546,7 +551,7 @@ export const generateThumbnailIdeas = async (topic, videoType = "historia") => {
   try {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash",
+      model: getGeminiModelName(),
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -580,7 +585,7 @@ export const generateRecommendedTopics = async (count = 1, excludeTopics = []) =
   try {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash",
+      model: getGeminiModelName(),
       generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -642,7 +647,7 @@ export const generateImagePromptsForScript = async (topic, scriptData) => {
   if (!apiKey) throw new Error('API_KEY_MISSING');
   const { GoogleGenerativeAI } = await import('@google/generative-ai');
   const genAI = new GoogleGenerativeAI(apiKey.trim());
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
+  const model = genAI.getGenerativeModel({ model: getGeminiModelName(), generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
   
   const scriptText = scriptData.map(s => s.audio).join('\n');
   const prompt = `Genera prompts de imágenes para un video musical infantil 3D sobre: "${topic}".
@@ -669,7 +674,7 @@ export const generateMusicPromptForScript = async (topic, scriptData) => {
   if (!apiKey) throw new Error('API_KEY_MISSING');
   const { GoogleGenerativeAI } = await import('@google/generative-ai');
   const genAI = new GoogleGenerativeAI(apiKey.trim());
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
+  const model = genAI.getGenerativeModel({ model: getGeminiModelName(), generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
   
   const prompt = `Genera un prompt de estilo musical en inglés para una canción infantil muy alegre, pegadiza y bailable sobre "${topic}".
 Devuelve un JSON con formato: { "musicPrompt": "..." }`;
@@ -688,7 +693,7 @@ export const generateAllContent = async (topic, duration = "1 minuto", videoType
     if (!apiKey) throw new Error('API_KEY_MISSING');
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey.trim());
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
+    const model = genAI.getGenerativeModel({ model: getGeminiModelName(), generationConfig: { responseMimeType: "application/json", temperature: 1.0 } });
 
     const prompt = `Actúa como un equipo experto de producción de YouTube (Guionista, SEO y Director de Arte).
 Tema: "${topic}"
