@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sparkles, Copy, Check, Loader2, RefreshCw } from 'lucide-react';
 import { generateScript, generateImagePromptsForScript, generateMusicPromptForScript } from '../services/aiService';
 
@@ -8,8 +8,13 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
   const [showAll, setShowAll] = useState(false);
   const [activeTab, setActiveTab] = useState('letra');
   const [promptCopiedIndex, setPromptCopiedIndex] = useState(null);
+  const [copiedPrompts, setCopiedPrompts] = useState(new Set());
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
   const [isGeneratingMusic, setIsGeneratingMusic] = useState(false);
+
+  useEffect(() => {
+    setCopiedPrompts(new Set());
+  }, [script]);
 
   const hasImagePrompts = script && script.some(row => row.imagePrompts && row.imagePrompts.length > 0);
   const hasMusicPrompt = script && script[0]?.musicPrompt;
@@ -372,32 +377,46 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
 
                       <div className="space-y-6 animate-fade-in">
                         {/* 1. Renderizar el prompt de Intro si existe */}
-                        {script[0]?.introPrompt && (
-                          <div className="bg-amber-50/50 dark:bg-amber-950/10 border-4 border-amber-400/40 rounded-3xl p-6 shadow-sm hover:border-amber-400 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
-                              🎬 Introducción
+                        {script[0]?.introPrompt && (() => {
+                          const isIntroCopied = copiedPrompts.has(script[0].introPrompt.prompt);
+                          return (
+                            <div className={`border-4 rounded-3xl p-6 shadow-sm transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group ${
+                              isIntroCopied 
+                                ? 'bg-emerald-50/10 dark:bg-emerald-950/5 border-emerald-400/60 shadow-emerald-100/20' 
+                                : 'bg-amber-50/50 dark:bg-amber-950/10 border-amber-400/40 hover:border-amber-400'
+                            }`}>
+                              <div className={`absolute top-0 right-0 text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm flex items-center gap-1 ${
+                                isIntroCopied ? 'bg-emerald-500' : 'bg-amber-500'
+                              }`}>
+                                {isIntroCopied ? '✓ Copiado' : '🎬 Introducción'}
+                              </div>
+                              <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
+                                <p className="text-amber-600 dark:text-amber-400 font-black text-xl mb-3 flex items-center gap-2">
+                                  <span>🎬</span> {script[0].introPrompt.line}
+                                </p>
+                                <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words font-semibold">
+                                  {script[0].introPrompt.prompt}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(script[0].introPrompt.prompt);
+                                  setPromptCopiedIndex('intro');
+                                  setCopiedPrompts(prev => {
+                                    const next = new Set(prev);
+                                    next.add(script[0].introPrompt.prompt);
+                                    return next;
+                                  });
+                                  setTimeout(() => setPromptCopiedIndex(null), 2000);
+                                }}
+                                className="btn-kids bg-amber-500 hover:bg-amber-600 text-white whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
+                              >
+                                {promptCopiedIndex === 'intro' ? <Check size={20} /> : <Copy size={20} />}
+                                {promptCopiedIndex === 'intro' ? '¡Intro Copiado!' : 'Copiar Prompt Intro'}
+                              </button>
                             </div>
-                            <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
-                              <p className="text-amber-600 dark:text-amber-400 font-black text-xl mb-3 flex items-center gap-2">
-                                <span>🎬</span> {script[0].introPrompt.line}
-                              </p>
-                              <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words font-semibold">
-                                {script[0].introPrompt.prompt}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(script[0].introPrompt.prompt);
-                                setPromptCopiedIndex('intro');
-                                setTimeout(() => setPromptCopiedIndex(null), 2000);
-                              }}
-                              className="btn-kids bg-amber-500 hover:bg-amber-600 text-white whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
-                            >
-                              {promptCopiedIndex === 'intro' ? <Check size={20} /> : <Copy size={20} />}
-                              {promptCopiedIndex === 'intro' ? '¡Intro Copiado!' : 'Copiar Prompt Intro'}
-                            </button>
-                          </div>
-                        )}
+                          );
+                        })()}
 
                         {/* 2. Renderizar los prompts de la letra de la canción */}
                         {(() => {
@@ -417,19 +436,70 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                             } else {
                               const sTag = row.audio?.match(/\[(.*?)\]/)?.[1] || `Verso ${sIdx + 1}`;
                               if (row.imagePrompts) {
-                                allImagePrompts.push(...row.imagePrompts.map(p => ({ ...p, sectionTag: sTag })));
+                                  allImagePrompts.push(...row.imagePrompts.map(p => ({ ...p, sectionTag: sTag })));
                               }
                             }
                           });
 
-                          return allImagePrompts.map((item, idx) => (
-                            <div key={`lyrics-${idx}`} className="bg-slate-50 dark:bg-slate-900 border-4 border-kids-primary/30 rounded-3xl p-6 shadow-sm hover:border-kids-primary transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
-                              <div className="absolute top-0 right-0 bg-kids-primary text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
-                                {item.sectionTag} • Línea {idx + 1}
+                          return allImagePrompts.map((item, idx) => {
+                            const isLyricsCopied = copiedPrompts.has(item.prompt);
+                            return (
+                              <div key={`lyrics-${idx}`} className={`border-4 rounded-3xl p-6 shadow-sm transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group ${
+                                isLyricsCopied
+                                  ? 'bg-emerald-50/10 dark:bg-emerald-950/5 border-emerald-400/60 shadow-emerald-100/20'
+                                  : 'bg-slate-50 dark:bg-slate-900 border-4 border-kids-primary/30 hover:border-kids-primary'
+                              }`}>
+                                <div className={`absolute top-0 right-0 text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm flex items-center gap-1 ${
+                                  isLyricsCopied ? 'bg-emerald-500' : 'bg-kids-primary'
+                                }`}>
+                                  {isLyricsCopied && <span>✓</span>} {item.sectionTag} • Línea {idx + 1}
+                                </div>
+                                <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
+                                  <p className="text-kids-secondary font-black text-xl mb-3 flex items-center gap-2">
+                                    <span>🎵</span> "{item.line}"
+                                  </p>
+                                  <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words">
+                                    {item.prompt}
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(item.prompt);
+                                    setPromptCopiedIndex(idx);
+                                    setCopiedPrompts(prev => {
+                                      const next = new Set(prev);
+                                      next.add(item.prompt);
+                                      return next;
+                                    });
+                                    setTimeout(() => setPromptCopiedIndex(null), 2000);
+                                  }}
+                                  className="btn-kids btn-primary whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
+                                >
+                                  {promptCopiedIndex === idx ? <Check size={20} /> : <Copy size={20} />}
+                                  {promptCopiedIndex === idx ? '¡Copiado!' : 'Copiar Prompt'}
+                                </button>
+                              </div>
+                            );
+                          });
+                        })()}
+
+                        {/* 3. Renderizar los 4 prompts extras de relleno */}
+                        {script[0]?.extraPrompts && script[0].extraPrompts.map((item, idx) => {
+                          const isExtraCopied = copiedPrompts.has(item.prompt);
+                          return (
+                            <div key={`extra-${idx}`} className={`border-4 rounded-3xl p-6 shadow-sm transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group ${
+                              isExtraCopied
+                                ? 'bg-emerald-50/10 dark:bg-emerald-950/5 border-emerald-400/60 shadow-emerald-100/20'
+                                : 'bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-400/40 hover:border-emerald-400'
+                            }`}>
+                              <div className={`absolute top-0 right-0 text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm flex items-center gap-1 ${
+                                isExtraCopied ? 'bg-emerald-500' : 'bg-emerald-500/80'
+                              }`}>
+                                {isExtraCopied ? '✓ Copiado' : `✨ Relleno / Extra ${idx + 1}`}
                               </div>
                               <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
-                                <p className="text-kids-secondary font-black text-xl mb-3 flex items-center gap-2">
-                                  <span>🎵</span> "{item.line}"
+                                <p className="text-emerald-600 dark:text-emerald-400 font-black text-xl mb-3 flex items-center gap-2">
+                                  <span>✨</span> {item.line}
                                 </p>
                                 <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words">
                                   {item.prompt}
@@ -438,45 +508,22 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
                               <button
                                 onClick={() => {
                                   navigator.clipboard.writeText(item.prompt);
-                                  setPromptCopiedIndex(idx);
+                                  setPromptCopiedIndex(`extra-${idx}`);
+                                  setCopiedPrompts(prev => {
+                                    const next = new Set(prev);
+                                    next.add(item.prompt);
+                                    return next;
+                                  });
                                   setTimeout(() => setPromptCopiedIndex(null), 2000);
                                 }}
-                                className="btn-kids btn-primary whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
+                                className="btn-kids bg-emerald-500 hover:bg-emerald-600 text-white whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
                               >
-                                {promptCopiedIndex === idx ? <Check size={20} /> : <Copy size={20} />}
-                                {promptCopiedIndex === idx ? '¡Copiado!' : 'Copiar Prompt'}
+                                {promptCopiedIndex === `extra-${idx}` ? <Check size={20} /> : <Copy size={20} />}
+                                {promptCopiedIndex === `extra-${idx}` ? '¡Relleno Copiado!' : 'Copiar Prompt Relleno'}
                               </button>
                             </div>
-                          ));
-                        })()}
-
-                        {/* 3. Renderizar los 4 prompts extras de relleno */}
-                        {script[0]?.extraPrompts && script[0].extraPrompts.map((item, idx) => (
-                          <div key={`extra-${idx}`} className="bg-emerald-50/50 dark:bg-emerald-950/10 border-4 border-emerald-400/40 rounded-3xl p-6 shadow-sm hover:border-emerald-400 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-black px-4 py-1 rounded-bl-2xl uppercase tracking-wider shadow-sm">
-                              ✨ Relleno / Extra {idx + 1}
-                            </div>
-                            <div className="flex-1 pt-4 md:pt-0 w-full md:w-auto">
-                              <p className="text-emerald-600 dark:text-emerald-400 font-black text-xl mb-3 flex items-center gap-2">
-                                <span>✨</span> {item.line}
-                              </p>
-                              <p className="text-slate-700 dark:text-slate-300 font-medium text-sm bg-white dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 font-mono select-all leading-relaxed break-words">
-                                {item.prompt}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(item.prompt);
-                                setPromptCopiedIndex(`extra-${idx}`);
-                                setTimeout(() => setPromptCopiedIndex(null), 2000);
-                              }}
-                              className="btn-kids bg-emerald-500 hover:bg-emerald-600 text-white whitespace-nowrap self-stretch md:self-auto flex items-center justify-center gap-2 min-w-[180px]"
-                            >
-                              {promptCopiedIndex === `extra-${idx}` ? <Check size={20} /> : <Copy size={20} />}
-                              {promptCopiedIndex === `extra-${idx}` ? '¡Relleno Copiado!' : 'Copiar Prompt Relleno'}
-                            </button>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </>
                   )}

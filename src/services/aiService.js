@@ -657,7 +657,7 @@ export const generateImagePromptsForScript = async (topic, scriptData) => {
 Basado en la siguiente letra de la canción:
 ${scriptText}
 
-Debes generar los prompts de las secciones, un prompt de introducción y 4 prompts extras de relleno.
+Debes generar los prompts de las secciones, un prompt de introducción y 6 prompts extras de relleno.
 Devuelve un JSON con el siguiente formato exacto:
 {
   "sections": [
@@ -675,15 +675,20 @@ Devuelve un JSON con el siguiente formato exacto:
     { "line": "Escena de relleno 1 - Transición divertida en el mismo estilo", "prompt": "..." },
     { "line": "Escena de relleno 2 - Detalle del personaje bailando o sonriendo", "prompt": "..." },
     { "line": "Escena de relleno 3 - Paisaje de fondo o elemento secundario alegre", "prompt": "..." },
-    { "line": "Escena de relleno 4 - Final de transición o plano general colorido", "prompt": "..." }
+    { "line": "Escena de relleno 4 - Final de transición o plano general colorido", "prompt": "..." },
+    { "line": "Botón de Suscribirse (YouTube) - Con la palabra 'Suscribirse' visible en la imagen", "prompt": "..." },
+    { "line": "Activar Campanita (YouTube) - Con la frase 'Activa la campanita' visible en la imagen", "prompt": "..." }
   ]
 }
 
 Reglas:
 - Para las secciones ("sections"): exactamente el mismo orden que la letra proporcionada. Cada sección debe tener un array "imagePrompts" con exactamente 4 prompts (uno para cada línea de la sección).
 - Para el prompt de introducción ("introPrompt"): debe describir una escena de inicio atractiva, colorida y misteriosa/divertida sobre el tema general de la canción.
-- Para los 4 prompts extras de relleno ("extraPrompts"): deben ser escenas genéricas y variadas pero sobre el mismo personaje y tema, muy coloridas, ideales para rellenar vacíos en la edición.
-- Idioma de los prompts visuales: todos los prompts visuales en el campo "prompt" deben estar en INGLÉS.
+- Para los 6 prompts extras de relleno ("extraPrompts"):
+  - Las primeras 4 deben ser escenas genéricas y variadas pero sobre el mismo personaje y tema, muy coloridas, ideales para rellenar vacíos en la edición.
+  - La 5ta debe ser una escena donde aparezca un gran botón de suscripción estilo 3D cartoon de YouTube con la palabra exacta "Suscribirse" (debe estar en ESPAÑOL, asegúrate de indicarlo en el prompt en inglés como: 'with the text "Suscribirse" written on it in Spanish').
+  - La 6ta debe ser una escena interactiva y divertida para activar la campanita de YouTube con la frase exacta "Activa la campanita" (debe estar en ESPAÑOL, asegúrate de indicarlo en el prompt en inglés como: 'with the text "Activa la campanita" written in Spanish').
+- Idioma de los prompts visuales: todos los prompts visuales en el campo "prompt" deben estar en INGLÉS (pero solicitando el texto en español como se indica arriba).
 - Estilo visual de todos los prompts (inglés): 3D cartoon style for kids, bright, vibrant colors, Pixar style, cute, friendly, detailed background.
 - Mantén la consistencia absoluta del protagonista/personaje en todos los prompts.`;
   
