@@ -1,5 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export const SOCIAL_NETWORKS = `\n\n🌐 Síguenos en redes sociales:\n\n📸 Instagram: https://www.instagram.com/ckc2.025/\n\n📘 Facebook: https://web.facebook.com/CKC2026/`;
+
+
 // Función auxiliar para obtener la instancia de Gemini AI
 const getGenAI = () => {
   const apiKey = localStorage.getItem('ckc_gemini_api_key') || import.meta.env.VITE_GEMINI_API_KEY;
@@ -9,15 +12,14 @@ const getGenAI = () => {
   return new GoogleGenerativeAI(apiKey.trim());
 };
 
-// Obtiene el modelo configurado por el usuario o usa el predeterminado (gemini-2.5-flash)
+// Obtiene el modelo configurado por el usuario o usa el predeterminado (gemini-3.5-flash)
 export const getGeminiModelName = () => {
   const model = localStorage.getItem('ckc_gemini_model');
-  if (model === 'gemini-1.5-flash') {
-    // Si tenían guardado el modelo viejo retirado por Google, forzar la migración
-    localStorage.setItem('ckc_gemini_model', 'gemini-2.5-flash');
-    return 'gemini-2.5-flash';
+  if (model === 'gemini-1.5-flash' || model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') {
+    localStorage.setItem('ckc_gemini_model', 'gemini-3.5-flash');
+    return 'gemini-3.5-flash';
   }
-  return model || 'gemini-2.5-flash';
+  return model || 'gemini-3.5-flash';
 };
 // Fallbacks simulados ricos y variados por si falla la API o no hay clave configurada
 export const getFallbackScript = (topic, duration, videoType) => {
@@ -329,42 +331,53 @@ export const getFallbackScript = (topic, duration, videoType) => {
 };
 
 export const getFallbackMetadata = (topic, videoType) => {
+  const cleanTopic = topic.trim();
+  let metadataObj;
   if (videoType === "musical") {
-    return {
+    metadataObj = {
       titles: [
-        `🎤 La Canción de ${topic} 🎶 | ¡Baila y Canta!`,
-        `🎵 ¡A Mover el Cuerpo! Ritmo y Diversión con ${topic} ✨`,
-        `🌟 ${topic}: El Video Musical Oficial para Niños 🚀`,
-        `¡Aprende Cantando sobre ${topic}! 🎧 (Música Infantil)`,
-        `🕺 Fiesta Musical Mágica con ${topic} 🎈`
+        `🎤 La Canción de ${cleanTopic} 🎶 | ¡Baila y Canta!`,
+        `🎵 ¡A Mover el Cuerpo! Ritmo y Diversión con ${cleanTopic} ✨`,
+        `🌟 ${cleanTopic}: El Video Musical Oficial para Niños 🚀`,
+        `¡Aprende Cantando sobre ${cleanTopic}! 🎧 (Música Infantil)`,
+        `🕺 Fiesta Musical Mágica con ${cleanTopic} 🎈`
       ],
-      description: `¡Hola amiguitos cantantes! 🎤🎶 Prepárense para bailar y cantar sin parar con la canción oficial de ${topic}.\n\nUna melodía súper pegadiza y llena de ritmo para que toda la familia aprenda bailando. ¡Sube el volumen y a disfrutar!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más éxitos musicales infantiles.`,
-      hashtags: ['#CancionInfantil', '#MusicaParaNiños', '#Bailar', '#Cantar', '#Infantil', '#AprenderCantando', '#Diversion', '#Familia', '#YoutubeKids', '#Ritmo']
+      description: `¡Hola amiguitos cantantes! 🎤🎶 Prepárense para bailar y cantar sin parar con la canción oficial de ${cleanTopic}.\n\nUna melodía súper pegadiza y llena de ritmo para que toda la familia aprenda bailando. ¡Sube el volumen y a disfrutar!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más éxitos musicales infantiles.`,
+      hashtags: ['#CancionInfantil', '#MusicaParaNiños', '#Bailar', '#Cantar', '#Infantil', '#AprenderCantando', '#Diversion', '#Familia', '#YoutubeKids', '#Ritmo'],
+      tags: `${cleanTopic}, cancion de ${cleanTopic}, musica para niños, canciones infantiles, youtube kids, caricaturas, videos divertidos, musica infantil, aprender, infantil, educativo`
     };
   } else if (videoType === "narracion") {
-    return {
+    metadataObj = {
       titles: [
-        `🔬 Aprende Todo Sobre ${topic} 🧠 | Datos Curiosos`,
-        `🔍 ¿Qué es ${topic}? Explicación Fácil para Niños 🚀`,
-        `💡 5 Curiosidades Increíbles de ${topic} que No Sabías 😱`,
-        `🌍 Explorando el Mundo de ${topic} (Video Educativo) 📚`,
-        `¡Misión Explorador! Descubriendo los Secretos de ${topic} 🕵️‍♂️`
+        `🔬 Aprende Todo Sobre ${cleanTopic} 🧠 | Datos Curiosos`,
+        `🔍 ¿Qué es ${cleanTopic}? Explicación Fácil para Niños 🚀`,
+        `💡 5 Curiosidades Increíbles de ${cleanTopic} que No Sabías 😱`,
+        `🌍 Explorando el Mundo de ${cleanTopic} (Video Educativo) 📚`,
+        `¡Misión Explorador! Descubriendo los Secretos de ${cleanTopic} 🕵️‍♂️`
       ],
-      description: `¡Hola pequeños exploradores! 🔍🎒 Hoy nos ponemos las gafas de investigar para descubrir todos los secretos y datos curiosos sobre ${topic}.\n\nUn video educativo, fácil de entender y súper entretenido para mentes curiosas. ¡Acompáñanos en esta misión de aprendizaje!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más videos educativos.`,
-      hashtags: ['#Educativo', '#Curiosidades', '#AprenderJugando', '#NiñosExploradores', '#CienciaInfantil', '#DatosCuriosos', '#Infantil', '#Conocimiento', '#YoutubeKids', '#Aprender']
+      description: `¡Hola pequeños exploradores! 🔍🎒 Hoy nos ponemos las gafas de investigar para descubrir todos los secretos y datos curiosos sobre ${cleanTopic}.\n\nUn video educativo, fácil de entender y súper entretenido para mentes curiosas. ¡Acompáñanos en esta misión de aprendizaje!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más videos educativos.`,
+      hashtags: ['#Educativo', '#Curiosidades', '#AprenderJugando', '#NiñosExploradores', '#CienciaInfantil', '#DatosCuriosos', '#Infantil', '#Conocimiento', '#YoutubeKids', '#Aprender'],
+      tags: `${cleanTopic}, curiosidades sobre ${cleanTopic}, educativo, niños, videos educativos, youtube kids, datos curiosos, aprender jugando, para niños, exploradores`
+    };
+  } else {
+    metadataObj = {
+      titles: [
+        `📖 El Cuento Mágico de ${cleanTopic} ✨ | Historias para Niños`,
+        `🌟 La Gran Aventura de ${cleanTopic} 🚀 (Cuento Infantil)`,
+        `🏰 Había una vez... El Misterio de ${cleanTopic} 🦄`,
+        `💤 Cuento para Dormir y Soñar con ${cleanTopic} 🌙`,
+        `¡Emocionante! La Historia Secreta de ${cleanTopic} 🎈`
+      ],
+      description: `¡Hola soñadores! 📖✨ Abran bien los ojos y prepárense para escuchar el cuento mágico más hermoso sobre ${cleanTopic}.\n\nAcompáñanos en esta increíble aventura llena de fantasía, amistad y valiosas lecciones. ¡Ideal para disfrutar en familia o antes de dormir!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más cuentos mágicos.`,
+      hashtags: ['#CuentosInfantiles', '#HistoriasParaNiños', '#CuentoMagico', '#Infantil', '#HoraDeDormir', '#Aventuras', '#Familia', '#Magia', '#Valores', '#YoutubeKids'],
+      tags: `${cleanTopic}, cuento de ${cleanTopic}, cuentos infantiles, historias para niños, cuentos para dormir, youtube kids, videos infantiles, fabula, fantasia`
     };
   }
-  return {
-    titles: [
-      `📖 El Cuento Mágico de ${topic} ✨ | Historias para Niños`,
-      `🌟 La Gran Aventura de ${topic} 🚀 (Cuento Infantil)`,
-      `🏰 Había una vez... El Misterio de ${topic} 🦄`,
-      `💤 Cuento para Dormir y Soñar con ${topic} 🌙`,
-      `¡Emocionante! La Historia Secreta de ${topic} 🎈`
-    ],
-    description: `¡Hola soñadores! 📖✨ Abran bien los ojos y prepárense para escuchar el cuento mágico más hermoso sobre ${topic}.\n\nAcompáñanos en esta increíble aventura llena de fantasía, amistad y valiosas lecciones. ¡Ideal para disfrutar en familia o antes de dormir!\n\nNo olvides darle LIKE 👍 y SUSCRIBIRTE 🔔 para más cuentos mágicos.`,
-    hashtags: ['#CuentosInfantiles', '#HistoriasParaNiños', '#CuentoMagico', '#Infantil', '#HoraDeDormir', '#Aventuras', '#Familia', '#Magia', '#Valores', '#YoutubeKids']
-  };
+
+  if (metadataObj && metadataObj.description) {
+    metadataObj.description = metadataObj.description.trim() + SOCIAL_NETWORKS;
+  }
+  return metadataObj;
 };
 
 export const getFallbackThumbnail = (topic, videoType) => {
@@ -407,7 +420,7 @@ Si el tema es sobre dinosaurios, hazla enérgica y gigante; si es sobre estrelli
 IMPORTANTE Y OBLIGATORIO DE ESTRUCTURA Y CALIDAD DE LETRA:
 1. CORRECCIÓN ORTOGRÁFICA Y GRAMATICAL OBLIGATORIA: Si el tema ingresado por el usuario ("${topic}") contiene errores de ortografía, errores de tipeo o gramaticales (por ejemplo, si escribe "dinoaurios" en vez de "dinosaurios", o "abja" en vez de "abeja"), DEBES CORREGIR el tema internamente antes de componer la canción. Toda la letra generada debe basarse en el tema correctamente escrito y tener una ortografía y gramática impecables en español neutro. ¡Bajo ninguna circunstancia incluyas el error ortográfico del usuario en la letra!
 2. LETRA COMPLETAMENTE LIMPIA (SIN EMOJIS NI PALABRAS RARAS): El texto en la propiedad "audio" debe ser texto plano completamente limpio. NO incluyas ningún emoji (❌), ningún símbolo musical (🎵), ningún símbolo extraño ni palabras raras, inventadas o complejas. Usa un vocabulario infantil natural, claro y correcto. ¡ESTÁ ESTRICTAMENTE PROHIBIDO USAR EMOJIS EN LOS COROS Y EN LOS VERSOS!
-3. Genera la letra de la canción estructurada en 8 secciones exactas (Verso 1, Coro, Verso 2, Coro, Verso 3, Coro, Verso 4, Coro Final).
+3. ESTRUCTURA PAREJA DE 8 SECCIONES OBLIGATORIA: Genera la letra de la canción estructurada en exactamente 8 secciones alternando Coro y Verso, comenzando obligatoriamente por el Coro: (Coro, Verso 1, Coro, Verso 2, Coro, Verso 3, Coro, Verso 4).
 4. TANTO EL CORO COMO CADA VERSO DEBEN TENER EXACTAMENTE 4 LÍNEAS DE LETRA (ni 3, ni 5, ni 6; obligatoriamente 4 líneas de letra cada uno).
 5. Las líneas deben ser cortas, con una estructura y métrica pareja, constante y fluida para que sea extremadamente fácil de cantar y ponerle ritmo musical.
 6. LA LETRA DEBE SER SUMAMENTE CREATIVA Y CONTAR UNA HISTORIA DIVERTIDA SOBRE EL TEMA DADO ("${topic}"). IMPORTANTE: NO intentes rimar o repetir el nombre completo del tema de forma literal y forzada en cada línea. La canción debe hablar SOBRE el tema (por ejemplo, si el tema es 'Perro espacial 🐕‍🚀', cuenta la historia de un perrito astronauta viajando por las estrellas y la luna, sin necesidad de repetir la frase 'perro espacial' de manera forzada en cada rima).
@@ -415,14 +428,14 @@ IMPORTANTE Y OBLIGATORIO DE ESTRUCTURA Y CALIDAD DE LETRA:
 
 REGLAS PARA LA LETRA ("audio"):
 - El "Coro" debe ser sumamente llamativo, pegadizo y alegre para atraer a los niños. El mismo coro se repite de forma idéntica después de cada verso. ¡RECUERDA: NO USES EMOJIS EN EL CORO! Su atractivo debe basarse únicamente en la letra y el ritmo.
-- Cada "Verso" (Verso 1, Verso 2, Verso 3, Verso 4) debe tener exactamente 4 líneas rimadas contando una parte nueva y divertida de la historia. Las líneas deben ser cortas y con buen ritmo para que al momento de cantar o producir la canción todo cuadre perfectamente. Ejemplo de un verso de 4 líneas cortas:
+- Cada "Verso" (Verso 1, Verso 2, Verso 3, Verso 4) debe tener exactamente 4 líneas rimadas contando una parte nueva y divertida de la historia. Las líneas deben ser cortas y con buen ritmo. Ejemplo de un verso de 4 líneas cortas:
 Si escondo su hueso, lo encuentra al revés,
 rasca la alfombra con patas otra vez.
 Trae sus juguetes, los pone a mis pies,
 ¡me entiende muy rápido, en un, dos y tres!
 
 REGLAS PARA EL PROMPT MUSICAL ("musicPrompt"):
-- En el PRIMER objeto del array (el del Verso 1), DEBES incluir una propiedad "musicPrompt".
+- En el objeto del Verso 1 (que es el segundo objeto de la lista, ya que el primero es el Coro), DEBES incluir una propiedad "musicPrompt".
 - REGLA DE TONO Y VARIEDAD: El estilo musical SIEMPRE debe ser alegre, divertido, positivo y con buen ritmo para encantar a los niños (usa términos obligatorios en inglés como "happy, upbeat, fun, joyful, cheerful, catchy melody").
 - CAMBIO DINÁMICO SEGÚN EL TEMA: Aunque siempre sea alegre y divertido, el género musical específico, el ritmo y los instrumentos DEBEN CAMBIAR dinámicamente basándose en el tema y la letra de la canción. Por ejemplo, si el tema es de piratas: "happy sea shanty pop, upbeat accordion, fun acoustic guitar, cheerful kid chorus"; si es del espacio: "fun synth pop, upbeat electronic beats, happy cosmic melody, cheerful vocals"; si es de dinosaurios: "energetic jungle pop, happy tribal percussion, fun bouncy bass, joyful kid songs".
 - Debe ser ideal para herramientas como Suno AI o Udio.
@@ -433,27 +446,68 @@ REGLAS PARA LOS PROMPTS DE IMÁGENES ("imagePrompts") Y COHERENCIA DE PERSONAJES
 - Por cada una de las líneas de la letra en esa sección, genera un objeto con la línea exacta ("line") y un prompt de imagen por IA ("prompt") que represente lo que dice esa línea.
 - REGLA ESTRICTA DE COHERENCIA DE ESTILO: Todos y cada uno de los prompts generados DEBEN comenzar exactamente con la misma instrucción de estilo maestro: "3D estilo cartoon infantil, brillo, colores vibrantes."
 - REGLA MAESTRA DE COHERENCIA DE PERSONAJES (¡CRÍTICO PARA LA ARMONÍA DEL VIDEO!): Para que las IAs generadoras de imágenes (DALL-E 3, Midjourney, Ideogram, etc.) mantengan al mismo personaje a lo largo de todo el video y no cambien su apariencia en cada foto, DEBES INVENTAR UNA DESCRIPCIÓN VISUAL FIJA Y EXTREMADAMENTE DETALLADA del personaje o personajes principales (sean niños, animales o ambos) al inicio del proceso y REPETIR ESA EXACTA DESCRIPCIÓN VISUAL VERBATIM en todos y cada uno de los prompts de la canción.
-- Por ejemplo, si el protagonista es un perrito, NO escribas solo "un perrito travieso". Debes inventar y usar en todos los prompts una descripción fija como: "El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante". Si es un oso: "El mismo oso pardo bebé gordito, con pelaje suave color canela, grandes ojos negros expresivos y un moño rojo en el cuello". Si es un niño: "El mismo niño de 5 años con cabello castaño rizado, pecas en las mejillas, usando una camiseta amarilla y overoles de mezclilla".
 - Estructura obligatoria de cada prompt: "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN VISUAL FIJA DEL PERSONAJE PRINCIPAL], [Acción y entorno específico de la línea actual]."
 - Mantén esta coherencia escrupulosamente en todos los versos y coros.
 - Para las repeticiones del Coro (después del Verso 2, Verso 3, Verso 4), puedes dejar el array "imagePrompts" vacío o repetir el mismo del primer coro, ya que en la interfaz mostraremos los prompts del coro una única vez.
 
-Devuelve estrictamente un array JSON de objetos con el formato:
+Devuelve estrictamente un array JSON de objetos con el formato con exactamente las 8 secciones alternando Coro y Verso:
 [
   { 
-    "audio": "[Verso 1]\nSi escondo su hueso, lo encuentra al revés,\nrasca la alfombra con patas otra vez.\nTrae sus juguetes, los pone a mis pies,\n¡me entiende muy rápido, en un, dos y tres!",
-    "musicPrompt": "upbeat children's pop, happy acoustic guitar, bouncy rhythm, catchy melody, cheerful male vocal",
+    "audio": "[Coro]\\n[Línea 1 del coro]\\n[Línea 2 del coro]\\n[Línea 3 del coro]\\n[Línea 4 del coro]",
     "imagePrompts": [
-      { "line": "Si escondo su hueso, lo encuentra al revés,", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, buscando su hueso debajo de un sofá amarillo en una sala acogedora." },
-      { "line": "rasca la alfombra con patas otra vez.", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, rascando una alfombra azul con texturas suaves y detalladas." },
-      { "line": "Trae sus juguetes, los pone a mis pies,", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, con una pelota roja en la boca frente a los zapatos de un niño." },
-      { "line": "¡me entiende muy rápido, en un, dos y tres!", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, chocando los cinco con un niño alegre entre destellos mágicos." }
+      { "line": "[Línea 1 del coro]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 2 del coro]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 3 del coro]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 4 del coro]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." }
     ]
   },
   { 
-    "audio": "[Coro]\n¡Baila, canta, ríe sin parar!\nCon el osito vamos a soñar.\n¡Da una vuelta entera y vuelve a saltar,\nque esta fiesta nunca va a terminar!",
+    "audio": "[Verso 1]\\n[Línea 1 del verso 1]\\n[Línea 2 del verso 1]\\n[Línea 3 del verso 1]\\n[Línea 4 del verso 1]",
+    "musicPrompt": "upbeat children's pop, happy acoustic guitar, bouncy rhythm, catchy melody, cheerful male vocal",
     "imagePrompts": [
-      { "line": "¡Baila, canta, ríe sin parar!", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. El mismo cachorro Beagle pequeño con orejas largas y caídas, pelaje blanco con manchas color caramelo y un collar azul brillante, bailando alegremente junto a un osito de peluche bajo luces de colores." }
+      { "line": "[Línea 1 del verso 1]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 2 del verso 1]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 3 del verso 1]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 4 del verso 1]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." }
+    ]
+  },
+  { 
+    "audio": "[Coro]\\n[Línea 1 del coro]\\n[Línea 2 del coro]\\n[Línea 3 del coro]\\n[Línea 4 del coro]",
+    "imagePrompts": []
+  },
+  { 
+    "audio": "[Verso 2]\\n[Línea 1 del verso 2]\\n[Línea 2 del verso 2]\\n[Línea 3 del verso 2]\\n[Línea 4 del verso 2]",
+    "imagePrompts": [
+      { "line": "[Línea 1 del verso 2]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 2 del verso 2]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 3 del verso 2]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 4 del verso 2]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." }
+    ]
+  },
+  { 
+    "audio": "[Coro]\\n[Línea 1 del coro]\\n[Línea 2 del coro]\\n[Línea 3 del coro]\\n[Línea 4 del coro]",
+    "imagePrompts": []
+  },
+  { 
+    "audio": "[Verso 3]\\n[Línea 1 del verso 3]\\n[Línea 2 del verso 3]\\n[Línea 3 del verso 3]\\n[Línea 4 del verso 3]",
+    "imagePrompts": [
+      { "line": "[Línea 1 del verso 3]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 2 del verso 3]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 3 del verso 3]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 4 del verso 3]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." }
+    ]
+  },
+  { 
+    "audio": "[Coro]\\n[Línea 1 del coro]\\n[Línea 2 del coro]\\n[Línea 3 del coro]\\n[Línea 4 del coro]",
+    "imagePrompts": []
+  },
+  { 
+    "audio": "[Verso 4]\\n[Línea 1 del verso 4]\\n[Línea 2 del verso 4]\\n[Línea 3 del verso 4]\\n[Línea 4 del verso 4]",
+    "imagePrompts": [
+      { "line": "[Línea 1 del verso 4]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 2 del verso 4]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 3 del verso 4]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." },
+      { "line": "[Línea 4 del verso 4]", "prompt": "3D estilo cartoon infantil, brillo, colores vibrantes. [DESCRIPCIÓN MAESTRA]..." }
     ]
   }
 ]`;
@@ -509,11 +563,8 @@ Devuelve estrictamente un array JSON de objetos con el formato:
     }
     return parsedData;
   } catch (error) {
-    console.warn("Gemini API Error en generateScript, usando fallback:", error);
-    if (error.message === "API_KEY_MISSING") {
-      throw error; // Dejamos que la UI avise al usuario
-    }
-    return getFallbackScript(topic, duration, videoType);
+    console.error("Gemini API Error en generateScript:", error);
+    throw error;
   }
 };
 
@@ -533,17 +584,26 @@ Genera los metadatos perfectos para que este video sea viral en YouTube y YouTub
 1. "titles": Un array con 5 títulos virales, atractivos y optimizados para CTR (incluye emojis).
 2. "description": Una descripción detallada y persuasiva para YouTube, incluyendo un saludo, resumen del contenido, llamado a la acción (suscribirse/like).
 3. "hashtags": Un array con 15 hashtags relevantes y populares (ej. #Infantil, #CancionesParaNiños, etc.).
+4. "tags": Un string de texto plano conteniendo exactamente de 25 a 35 palabras clave o etiquetas (tags) para YouTube separadas por comas, relevantes al tema (ej. "palabra clave 1, palabra clave 2, ...") sin hashtags, con un máximo de 500 caracteres en total.
 
 Devuelve estrictamente un objeto JSON con el formato:
 {
   "titles": ["..."],
   "description": "...",
-  "hashtags": ["#..."]
+  "hashtags": ["#..."],
+  "tags": "..."
 }`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-    return JSON.parse(text);
+    const parsedData = JSON.parse(text);
+    if (parsedData && parsedData.description) {
+      const trimmedDesc = parsedData.description.trim();
+      if (!trimmedDesc.includes("https://www.instagram.com/ckc2.025/")) {
+        parsedData.description = trimmedDesc + SOCIAL_NETWORKS;
+      }
+    }
+    return parsedData;
   } catch (error) {
     console.warn("Gemini API Error en generateMetadata, usando fallback:", error);
     if (error.message === "API_KEY_MISSING") {
@@ -739,7 +799,8 @@ Genera todo el contenido para este video en un solo JSON con la siguiente estruc
   "metadata": {
     "titles": ["Título 1", "Título 2", "Título 3", "Título 4", "Título 5"],
     "description": "Descripción del video...",
-    "hashtags": ["#Tag1", "#Tag2"]
+    "hashtags": ["#Tag1", "#Tag2"],
+    "tags": "etiqueta1, etiqueta2, etiqueta3, ..."
   },
   "thumbnail": {
     "visualPrompt": "3D estilo cartoon infantil, brillo, colores vibrantes...",
@@ -749,7 +810,7 @@ Genera todo el contenido para este video en un solo JSON con la siguiente estruc
 
 REGLAS PARA EL SCRIPT:
 - Si es musical:
-  1. El JSON de "script" debe tener EXACTAMENTE 8 secciones alternando Coro y Verso (Coro, Verso 1, Coro, Verso 2, Coro, Verso 3, Coro, Verso 4).
+  1. El JSON de "script" debe tener EXACTAMENTE 8 secciones alternando Coro y Verso, comenzando obligatoriamente por el Coro: (Coro, Verso 1, Coro, Verso 2, Coro, Verso 3, Coro, Verso 4). Bajo ninguna circunstancia omitas los coros ni generes secciones de versos seguidos.
   2. TANTO EL CORO COMO CADA VERSO DEBEN TENER EXACTAMENTE 4 LÍNEAS DE LETRA (ni 3, ni 5, ni 6; obligatoriamente 4 líneas de letra cada uno).
   3. Las líneas deben ser cortas, con una estructura y métrica pareja, constante y fluida para que sea extremadamente fácil de cantar y ponerle ritmo musical.
   4. Las rimas deben ser claras, pegadizas y divertidas, totalmente libres de clichés comunes.
@@ -762,6 +823,7 @@ REGLAS PARA EL SCRIPT:
 REGLAS PARA METADATA:
 - Títulos llamativos y virales con emojis.
 - 15 hashtags relevantes.
+- Un string "tags" con exactamente de 25 a 35 palabras clave o etiquetas (tags) para YouTube separadas por comas, relevantes al tema (ej. "palabra clave 1, palabra clave 2, ...") sin hashtags, con un máximo de 500 caracteres en total.
 
 REGLAS PARA THUMBNAIL:
 - visualPrompt detallado en español para generadores como Midjourney, 3D cartoon infantil.
@@ -779,6 +841,12 @@ REGLAS PARA THUMBNAIL:
           item.audio = item.audio.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E6}-\u{1F1FF}]|[\u{2B50}]|[\u{2B55}]|[\u{23F3}]|[\u{23F0}]|[\u{23E9}-\u{23EC}]|[\u{25B6}]/gu, '');
         }
       });
+    }
+    if (parsedData && parsedData.metadata && parsedData.metadata.description) {
+      const trimmedDesc = parsedData.metadata.description.trim();
+      if (!trimmedDesc.includes("https://www.instagram.com/ckc2.025/")) {
+        parsedData.metadata.description = trimmedDesc + SOCIAL_NETWORKS;
+      }
     }
     return parsedData;
   } catch (error) {

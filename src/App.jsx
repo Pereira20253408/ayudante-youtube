@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Wand2, Tags, Image as ImageIcon, Sparkles, Loader2, Clock, Moon, Sun, History, Film, Trash2, RotateCcw, Star, Check, Key } from 'lucide-react';
+import { LayoutDashboard, Wand2, Tags, Sparkles, Loader2, Clock, Moon, Sun, History, Film, Trash2, RotateCcw, Star, Check, Key } from 'lucide-react';
 import ScriptGenerator from './components/ScriptGenerator';
 import MetadataStudio from './components/MetadataStudio';
-import ThumbnailIdeas from './components/ThumbnailIdeas';
-import { generateScript, generateMetadata, generateThumbnailIdeas, generateRecommendedTopics, getFallbackScript, getFallbackMetadata, getFallbackThumbnail, generateAllContent } from './services/aiService';
+import { generateScript, generateMetadata, generateRecommendedTopics, getFallbackScript, getFallbackMetadata, generateAllContent } from './services/aiService';
 
 const DEFAULT_SUGGESTED_TOPICS = [
   "Un dinosaurio que aprende a cepillarse los dientes 🦖",
@@ -20,6 +19,7 @@ function App() {
   const [videoType, setVideoType] = useState('historia');
   const [chosenTopic, setChosenTopic] = useState('');
   const [history, setHistory] = useState([]);
+  const [chosenTopics, setChosenTopics] = useState([]);
   const [isLoadingAll, setIsLoadingAll] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -30,7 +30,7 @@ function App() {
   const [apiKey, setApiKey] = useState('');
   const [showApiModal, setShowApiModal] = useState(false);
   const [fallbackWarning, setFallbackWarning] = useState(null);
-  const [geminiModel, setGeminiModel] = useState('gemini-2.5-flash');
+  const [geminiModel, setGeminiModel] = useState('gemini-3.5-flash');
 
   // Global results state
   const [script, setScript] = useState(null);
@@ -45,6 +45,7 @@ function App() {
     const savedChosenTopic = localStorage.getItem('ckc_chosenTopic');
     const savedDarkMode = localStorage.getItem('ckc_darkMode');
     const savedHistory = localStorage.getItem('ckc_history');
+    const savedChosenTopics = localStorage.getItem('ckc_chosenTopics');
     const savedScript = localStorage.getItem('ckc_script');
     const savedMetadata = localStorage.getItem('ckc_metadata');
     const savedThumbnail = localStorage.getItem('ckc_thumbnail');
@@ -58,12 +59,21 @@ function App() {
     if (savedChosenTopic) setChosenTopic(savedChosenTopic);
     if (savedDarkMode) setDarkMode(savedDarkMode === 'true');
     if (savedHistory) setHistory(JSON.parse(savedHistory));
+    if (savedChosenTopics) setChosenTopics(JSON.parse(savedChosenTopics));
     if (savedScript) setScript(JSON.parse(savedScript));
     if (savedMetadata) setMetadata(JSON.parse(savedMetadata));
     if (savedThumbnail) setThumbnailIdea(JSON.parse(savedThumbnail));
     if (savedApiKey) setApiKey(savedApiKey);
     if (savedSuggestedTopics) setSuggestedTopics(JSON.parse(savedSuggestedTopics));
-    if (savedModel) setGeminiModel(savedModel);
+    if (savedModel) {
+      if (savedModel === 'gemini-1.5-flash' || savedModel === 'gemini-2.0-flash' || savedModel === 'gemini-2.5-flash') {
+        setGeminiModel('gemini-3.5-flash');
+      } else {
+        setGeminiModel(savedModel);
+      }
+    } else {
+      setGeminiModel('gemini-3.5-flash');
+    }
 
     setIsLoaded(true);
   }, []);
@@ -107,11 +117,12 @@ function App() {
     localStorage.setItem('ckc_chosenTopic', chosenTopic);
     localStorage.setItem('ckc_darkMode', darkMode);
     localStorage.setItem('ckc_history', JSON.stringify(history));
+    localStorage.setItem('ckc_chosenTopics', JSON.stringify(chosenTopics));
     localStorage.setItem('ckc_suggested_topics', JSON.stringify(suggestedTopics));
     if (script) localStorage.setItem('ckc_script', JSON.stringify(script));
     if (metadata) localStorage.setItem('ckc_metadata', JSON.stringify(metadata));
     if (thumbnailIdea) localStorage.setItem('ckc_thumbnail', JSON.stringify(thumbnailIdea));
-  }, [isLoaded, topic, duration, videoType, chosenTopic, darkMode, history, script, metadata, thumbnailIdea, suggestedTopics]);
+  }, [isLoaded, topic, duration, videoType, chosenTopic, darkMode, history, chosenTopics, script, metadata, thumbnailIdea, suggestedTopics]);
 
   useEffect(() => {
     if (darkMode) {
@@ -197,6 +208,56 @@ function App() {
     setHistory(prev => prev.filter(item => item.id !== id));
   };
 
+  const handleSaveAsChosen = () => {
+    if (!topic.trim()) return alert('Escribe o genera un tema primero en el recuadro superior');
+
+    const cleanTopic = topic.trim();
+    const exists = chosenTopics.some(item => item.topic.toLowerCase() === cleanTopic.toLowerCase());
+    
+    const newChosen = {
+      id: exists ? chosenTopics.find(item => item.topic.toLowerCase() === cleanTopic.toLowerCase()).id : Date.now(),
+      topic: cleanTopic,
+      duration,
+      videoType,
+      script,
+      metadata,
+      thumbnailIdea,
+      date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    if (exists) {
+      setChosenTopics(prev => prev.map(item => item.topic.toLowerCase() === cleanTopic.toLowerCase() ? newChosen : item));
+    } else {
+      setChosenTopics(prev => [newChosen, ...prev]);
+    }
+
+    setChosenTopic(cleanTopic);
+    setChosenCopied(true);
+    setTimeout(() => setChosenCopied(false), 2000);
+
+    // Si el tema actual ingresado coincide con alguno de la lista (ignorando emoji), removerlo y cargar otro
+    const matchingSug = suggestedTopics.find(t => t.replace(/ [^ ]+$/, '') === cleanTopic);
+    if (matchingSug) {
+      handleSelectSuggestedTopic(matchingSug);
+    }
+  };
+
+  const handleRestoreChosen = (item) => {
+    setTopic(item.topic);
+    setDuration(item.duration);
+    setVideoType(item.videoType);
+    setScript(item.script);
+    setMetadata(item.metadata);
+    setThumbnailIdea(item.thumbnailIdea);
+    setChosenTopic(item.topic);
+    setFallbackWarning(null);
+    setActiveTab('script');
+  };
+
+  const handleDeleteChosenItem = (id) => {
+    setChosenTopics(prev => prev.filter(item => item.id !== id));
+  };
+
   const getFriendlyErrorMessage = (errorMsg) => {
     if (!errorMsg) return "";
     const lower = errorMsg.toLowerCase();
@@ -245,11 +306,13 @@ function App() {
                   onChange={(e) => setGeminiModel(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-2xl p-3 font-bold text-slate-800 dark:text-white focus:outline-none focus:border-kids-secondary transition-all"
                 >
-                  <option value="gemini-2.5-flash">Gemini 2.5 Flash (Gratuito, 1500 consultas/día)</option>
-                  <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (Rápido, 1500 consultas/día)</option>
+                  <option value="gemini-3.5-flash">Gemini 3.5 Flash (Predeterminado, 1500 consultas/día)</option>
+                  <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite (Rápido, 1500 consultas/día)</option>
+                  <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                  <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
                 </select>
                 <p className="text-[11px] text-kids-secondary font-bold mt-1.5 leading-relaxed">
-                  💡 Nota: Google retiró los modelos anteriores 1.5. Los modelos 2.5 Flash ofrecen 1500 consultas diarias totalmente gratis en tu API Key.
+                  💡 Nota: Se recomiendan los modelos Gemini 3.5/3.1 Flash para mayor velocidad y precisión. Ofrecen 1500 consultas diarias totalmente gratis en tu API Key.
                 </p>
               </div>
             </div>
@@ -311,18 +374,6 @@ function App() {
           </button>
 
           <button 
-            onClick={() => setActiveTab('thumbnail')}
-            className={`flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all ${
-              activeTab === 'thumbnail' 
-                ? 'bg-kids-purple text-white shadow-kids-button translate-x-2' 
-                : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
-            }`}
-          >
-            <ImageIcon size={24} />
-            Miniaturas
-          </button>
-
-          <button 
             onClick={() => setActiveTab('history')}
             className={`flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all ${
               activeTab === 'history' 
@@ -332,6 +383,18 @@ function App() {
           >
             <History size={24} />
             Historial ({history.length})
+          </button>
+
+          <button 
+            onClick={() => setActiveTab('chosen')}
+            className={`flex items-center gap-4 p-4 rounded-2xl text-lg font-bold transition-all ${
+              activeTab === 'chosen' 
+                ? 'bg-kids-purple text-white shadow-kids-button translate-x-2' 
+                : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
+            }`}
+          >
+            <Star size={24} className={activeTab === 'chosen' ? 'fill-white' : 'fill-transparent'} />
+            Temas Elegidos ({chosenTopics.length})
           </button>
         </nav>
 
@@ -492,18 +555,7 @@ function App() {
                 <div className="flex items-center gap-3 w-full lg:w-auto justify-end pt-2 lg:pt-0">
                   <button
                     type="button"
-                    onClick={() => {
-                      if (!topic.trim()) return alert('Escribe un tema primero en el recuadro superior');
-                      setChosenTopic(topic);
-                      setChosenCopied(true);
-                      setTimeout(() => setChosenCopied(false), 2000);
-
-                      // Si el tema actual ingresado coincide con alguno de la lista (ignorando emoji), removerlo y cargar otro
-                      const matchingSug = suggestedTopics.find(t => t.replace(/ [^ ]+$/, '') === topic.trim());
-                      if (matchingSug) {
-                        handleSelectSuggestedTopic(matchingSug);
-                      }
-                    }}
+                    onClick={handleSaveAsChosen}
                     disabled={!topic.trim()}
                     className="btn-kids btn-accent text-sm py-2 px-4 shadow-kids-button flex items-center gap-2 whitespace-nowrap"
                   >
@@ -535,15 +587,7 @@ function App() {
                 isLoading={isLoadingAll}
               />
             )}
-            {activeTab === 'thumbnail' && (
-              <ThumbnailIdeas 
-                topic={topic}
-                videoType={videoType}
-                idea={thumbnailIdea} 
-                setIdea={setThumbnailIdea} 
-                isLoading={isLoadingAll}
-              />
-            )}
+
             {activeTab === 'history' && (
               <div className="space-y-6 animate-fade-in">
                 <div>
@@ -583,6 +627,60 @@ function App() {
                             onClick={() => handleDeleteHistoryItem(item.id)}
                             className="bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 p-3 rounded-2xl font-bold transition-all"
                             title="Eliminar del historial"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'chosen' && (
+              <div className="space-y-6 animate-fade-in">
+                <div>
+                  <h2 className="text-4xl font-black text-slate-800 dark:text-white mb-2 flex items-center gap-3">
+                    Temas Elegidos y Guardados <span className="text-4xl">🎯</span>
+                  </h2>
+                  <p className="text-xl text-slate-500 dark:text-slate-400 font-bold">Accede a las letras, metadatos y miniaturas de los videos elegidos para tu canal</p>
+                </div>
+
+                {chosenTopics.length === 0 ? (
+                  <div className="card-kids bg-white dark:bg-slate-800 text-center py-12">
+                    <p className="text-slate-400 font-bold text-lg">No has fijado ningún tema como escogido aún. ¡Fija tus temas favoritos arriba!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4">
+                    {chosenTopics.map(item => (
+                      <div key={item.id} className="card-kids bg-white dark:bg-slate-800 border-l-8 border-l-kids-purple flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-l-kids-primary transition-all">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-black px-3 py-1 rounded-lg uppercase">
+                              {item.videoType === 'musical' ? '🎵 Musical' : item.videoType === 'narracion' ? '🔬 Educativo' : '📖 Historia'}
+                            </span>
+                            <span className="text-xs font-bold text-slate-400">{item.date}</span>
+                          </div>
+                          <h3 className="text-xl font-black text-slate-800 dark:text-white">{item.topic}</h3>
+                          <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Duración: {item.duration}</p>
+                          <div className="flex gap-2 pt-1">
+                            {item.script && <span className="text-[11px] bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded font-black">📄 Guion Guardado</span>}
+                            {item.metadata && <span className="text-[11px] bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 px-2 py-0.5 rounded font-black">🏷️ SEO Guardado</span>}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                          <button
+                            onClick={() => handleRestoreChosen(item)}
+                            className="btn-kids bg-kids-purple hover:bg-purple-600 text-white text-sm py-2 px-4 flex items-center gap-2 shadow-sm"
+                          >
+                            <RotateCcw size={16} />
+                            Restaurar Datos
+                          </button>
+                          <button
+                            onClick={() => handleDeleteChosenItem(item.id)}
+                            className="bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 p-3 rounded-2xl font-bold transition-all"
+                            title="Eliminar de elegidos"
                           >
                             <Trash2 size={18} />
                           </button>

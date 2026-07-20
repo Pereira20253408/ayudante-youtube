@@ -117,6 +117,25 @@ export default function MetadataStudio({ topic, videoType, metadata, setMetadata
                 ))}
               </div>
             </div>
+
+            {/* Etiquetas YouTube */}
+            {metadata.tags && (
+              <div className="card-kids animate-fade-in">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-2xl font-black text-slate-800 dark:text-white">Etiquetas YouTube (Tags) 🏷️</h3>
+                  <button 
+                    onClick={() => copyText(metadata.tags, 'tags-yt')}
+                    className="text-slate-400 hover:text-kids-green transition-colors"
+                  >
+                    {copiedTitle === 'tags-yt' ? <Check size={20} className="text-kids-green" /> : <Copy size={20} />}
+                  </button>
+                </div>
+                <p className="text-xs font-bold text-slate-400 dark:text-slate-500 mb-2">Copia y pega estas etiquetas en el campo de etiquetas de YouTube Studio (separadas por comas):</p>
+                <p className="text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border-2 border-slate-100 dark:border-slate-700 whitespace-pre-line text-xs font-mono select-all">
+                  {metadata.tags}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

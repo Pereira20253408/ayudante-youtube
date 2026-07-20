@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Sparkles, Copy, Check, Loader2, RefreshCw } from 'lucide-react';
-import { generateScript, generateImagePromptsForScript, generateMusicPromptForScript } from '../services/aiService';
+import { generateScript, generateImagePromptsForScript, generateMusicPromptForScript, getFallbackScript } from '../services/aiService';
 
 export default function ScriptGenerator({ topic, duration, videoType, script, setScript, isLoading: isParentLoading }) {
   const [isLocalLoading, setIsLocalLoading] = useState(false);
@@ -11,6 +11,7 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
   const [copiedPrompts, setCopiedPrompts] = useState(new Set());
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
   const [isGeneratingMusic, setIsGeneratingMusic] = useState(false);
+  const [fallbackWarning, setFallbackWarning] = useState(null);
 
   useEffect(() => {
     setCopiedPrompts(new Set());
@@ -127,20 +128,36 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
 
   const isLoading = isParentLoading || isLocalLoading;
 
+  const getFriendlyErrorMessage = (errorMsg) => {
+    if (!errorMsg) return "";
+    const lower = errorMsg.toLowerCase();
+    if (lower.includes("429") || lower.includes("quota") || lower.includes("limit exceeded")) {
+      return "Límite de peticiones de Google Gemini superado (Error 429). La versión gratuita de Google limita la API a 5 consultas por minuto. Por favor, espera 30 segundos y vuelve a intentarlo.";
+    }
+    if (lower.includes("api key not valid") || lower.includes("invalid api key") || lower.includes("api_key_invalid") || (lower.includes("api key") && lower.includes("invalid")) || lower.includes("invalid key")) {
+      return "Tu clave de API de Gemini no es válida o fue desactivada. Asegúrate de haberla copiado correctamente desde Google AI Studio y que no tenga espacios adicionales.";
+    }
+    return errorMsg;
+  };
+
   const handleGenerate = async (e) => {
     if (e) e.preventDefault();
     if (!topic.trim()) return;
     setIsLocalLoading(true);
     setShowAll(false);
+    setFallbackWarning(null);
     try {
       const result = await generateScript(topic, duration, videoType);
       setScript(result);
     } catch (error) {
       console.error(error);
+      const errorMsg = error.message || String(error);
       if (error.message === 'API_KEY_MISSING') {
         alert('🔑 No has configurado tu API Key de Google Gemini. Por favor haz clic en el botón "🔑 Configurar API Key" en el menú lateral para ingresar tu clave y usar la IA real.');
       } else {
-        alert('Error generando el contenido.');
+        setFallbackWarning(getFriendlyErrorMessage(errorMsg));
+        const scriptFallback = getFallbackScript(topic, duration, videoType);
+        setScript(scriptFallback);
       }
     } finally {
       setIsLocalLoading(false);
@@ -195,6 +212,21 @@ export default function ScriptGenerator({ topic, duration, videoType, script, se
           </button>
         </div>
       </div>
+
+      {fallbackWarning && (
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-4 border-amber-400 p-5 rounded-3xl flex items-start gap-4 shadow-lg animate-fade-in relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-2 h-full bg-amber-400"></div>
+          <div className="flex-1 space-y-1">
+            <h4 className="font-black text-amber-800 dark:text-amber-300 text-base flex items-center gap-2">
+              ⚠️ Usando letra de prueba (Fallback)
+            </h4>
+            <p className="text-sm text-amber-700 dark:text-amber-400 font-bold leading-relaxed">
+              La API de Gemini falló con el siguiente inconveniente: <span className="bg-amber-100 dark:bg-amber-900/50 px-2 py-0.5 rounded font-mono text-xs text-amber-900 dark:text-amber-200 block mt-1 mb-2">{fallbackWarning}</span> 
+              Se ha cargado una letra de prueba. Revisa tu API Key de Gemini en la parte inferior lateral o intenta de nuevo en unos segundos.
+            </p>
+          </div>
+        </div>
+      )}
 
       {script && (
         <div className="card-kids">
